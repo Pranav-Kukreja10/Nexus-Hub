@@ -106,8 +106,8 @@ body {
 .clock:hover {
     transform: scale(1.15);
     cursor: pointer;
-    color: #fff;
-    text-shadow: 0 0 15px #ffffff33;
+    color: var(--text);
+    text-shadow: 0 0 15px var(--glass-hover);
 }
 
 .weather-widget {
@@ -198,7 +198,7 @@ body {
 
 .project-name:hover {
     cursor: default;
-    color: #fff;
+    color: var(--text);
     scale: 1.2;
 }
 
@@ -241,7 +241,7 @@ body {
 
 .engine-select option {
     background: #1a1d2e;
-    color: #fff;
+    color: var(--text);
 }
 
 .search-input {
@@ -276,7 +276,7 @@ body {
     border-radius: 50%;
     border: none;
     background: var(--accent);
-    color: #fff;
+    color: var(--text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -438,7 +438,7 @@ body {
     border-radius: 12px;
     border: none;
     background: var(--accent);
-    color: #fff;
+    color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -468,7 +468,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    background: #00000026;
+    background: var(--glass);
     padding: 12px 14px;
     border-radius: 12px;
     border-left: 4px solid var(--accent);
@@ -477,7 +477,7 @@ body {
 }
 
 .schedule-item:hover {
-    background: #ffffff18;
+    background: var(--glass-hover);
     border-left-color: var(--accent-2);
     transform: translateX(4px);
 }
@@ -499,7 +499,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #00000026;
+    background: var(--glass);
     padding: 10px 12px;
     border-radius: 12px;
     font-size: 14px;
@@ -508,7 +508,7 @@ body {
 }
 
 .task-item:hover {
-    background: #ffffff09;
+    background: var(--glass-hover);
 }
 
 .task-check {
@@ -565,7 +565,7 @@ body {
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid var(--border);
-    background: #00000033;
+    background: var(--glass);
     color: var(--text);
     font-size: 14px;
     outline: none;
@@ -593,7 +593,7 @@ body {
 .progress-tracker {
     width: 100%;
     height: 5px;
-    background: #FFFFFF14;
+    background: var(--glass);
     border-radius: 10px;
     overflow: hidden;
 }
@@ -617,7 +617,7 @@ body {
     width: 68px;
     height: 68px;
     border-radius: 14px;
-    background: #0000004D;
+    background: var(--glass);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -727,7 +727,7 @@ body {
 
 .timer-adjust:hover {
     background: var(--accent);
-    color: #fff;
+    color: var(--text);
     border-color: var(--accent);
     transform: scale(1.15);
     box-shadow: 0 4px 12px #7c6eff4d;
@@ -811,7 +811,7 @@ select.conv-dropdown option {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #00000033;
+    background: var(--glass);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 6px 12px;
@@ -848,7 +848,7 @@ select.conv-dropdown option {
     font-size: 12px;
     color: var(--text-muted);
     padding-top: 10px;
-    border-top: 1px solid #FFFFFF0D;
+    border-top: 1px solid var(--border);
 }
 
 /* Notes */
@@ -894,7 +894,7 @@ select.conv-dropdown option {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: #00000026;
+    background: var(--glass);
     padding: 10px;
     border-radius: 12px;
     color: var(--text);
@@ -944,7 +944,7 @@ select.conv-dropdown option {
 }
 
 .site-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass);
 }
 
 .site-info {
@@ -973,7 +973,7 @@ select.conv-dropdown option {
 .site-bar-track {
     width: 100%;
     height: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-hover);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -1196,10 +1196,10 @@ select.conv-dropdown option {
     padding: 18px 22px 14px;
     border-radius: 16px 16px 16px 0;
 
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--glass);
     backdrop-filter: blur(28px) saturate(160%);
     -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border);
     box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.04) inset,
@@ -1228,7 +1228,7 @@ select.conv-dropdown option {
     gap: 8px;
     margin-bottom: 14px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid var(--border);
 }
 
 .theme-popup-head .material-symbols-rounded {
@@ -1273,7 +1273,7 @@ select.conv-dropdown option {
 }
 
 .theme-btn:hover {
-    background: rgba(255,255,255,0.06);
+    background: var(--glass);
     border-color: var(--accent);
     transform: translateY(-3px);
 }
@@ -1320,7 +1320,7 @@ select.conv-dropdown option {
     background: rgba(0,0,0,0.2);
     padding: 8px 12px;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
     font-size: 12px;
     font-weight: 500;
     color: var(--text-muted);
@@ -1347,6 +1347,12 @@ input[type="color"] {
 /* Live Gradient Background Animation */
 body.bg-gradient {
     background: linear-gradient(-45deg, #0e1015, #2a1b38, #16213e, #0e1015);
+    background-size: 400% 400%;
+    animation: moveGradient 15s ease infinite;
+}
+
+body.bg-cosmic {
+    background: linear-gradient(-45deg, #0d1b2a, #3a0ca3, #f72585, #4361ee, #0d1b2a);
     background-size: 400% 400%;
     animation: moveGradient 15s ease infinite;
 }

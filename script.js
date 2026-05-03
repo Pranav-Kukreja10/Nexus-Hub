@@ -422,56 +422,67 @@ notesArea.addEventListener("input", function () {
                 rootStyle.setProperty("--bg", savedBg); // Uses custom bg for default mode
                 rootStyle.setProperty("--text", "#e8eaf2");
                 rootStyle.setProperty("--glass", "#FFFFFF0F");
+                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
                 rootStyle.setProperty("--border", "#FFFFFF17");
+                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
                 break;
-            case "light":
-                rootStyle.setProperty("--bg", "#f4f5f9");
-                rootStyle.setProperty("--text", "#1a1d2e");
-                rootStyle.setProperty("--glass", "#0000000A"); 
-                rootStyle.setProperty("--border", "#00000017");
+            case "cosmic":
+                rootStyle.setProperty("--bg", "transparent");
+                rootStyle.setProperty("--text", "#e8eaf2");
+                rootStyle.setProperty("--glass", "#FFFFFF0F"); 
+                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
+                rootStyle.setProperty("--border", "#FFFFFF17");
+                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
+                document.body.classList.add("bg-cosmic");
                 break;
             case "gradient":
                 rootStyle.setProperty("--bg", "transparent");
                 rootStyle.setProperty("--text", "#e8eaf2");
                 rootStyle.setProperty("--glass", "#FFFFFF0F");
+                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
                 rootStyle.setProperty("--border", "#FFFFFF17");
+                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
                 document.body.classList.add("bg-gradient");
                 break;
             case "hacker":
                 rootStyle.setProperty("--bg", "#050505");
                 rootStyle.setProperty("--text", "#00ff00");
                 rootStyle.setProperty("--glass", "#00ff000A");
+                rootStyle.setProperty("--glass-hover", "#00ff001A");
                 rootStyle.setProperty("--border", "#00ff0033");
+                rootStyle.setProperty("--border-hover", "#00ff004D");
                 break;
             case "ocean":
                 rootStyle.setProperty("--bg", "#041b2d");
                 rootStyle.setProperty("--text", "#e0f7fa");
                 rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--glass-hover", "#ffffff1A");
                 rootStyle.setProperty("--border", "#00e5ff33");
+                rootStyle.setProperty("--border-hover", "#00e5ff4D");
                 break;
             case "sunset":
                 rootStyle.setProperty("--bg", "#2b1104");
                 rootStyle.setProperty("--text", "#ffe0b2");
                 rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--glass-hover", "#ffffff1A");
                 rootStyle.setProperty("--border", "#ff572233");
+                rootStyle.setProperty("--border-hover", "#ff57224D");
                 break;
             case "vaporwave":
                 rootStyle.setProperty("--bg", "#2b003a");
                 rootStyle.setProperty("--text", "#f8bbd0");
                 rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--glass-hover", "#ffffff1A");
                 rootStyle.setProperty("--border", "#ff007f33");
+                rootStyle.setProperty("--border-hover", "#ff007f4D");
                 break;
             case "midnight":
                 rootStyle.setProperty("--bg", "#0a1128");
                 rootStyle.setProperty("--text", "#fdf0d5");
                 rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--glass-hover", "#ffffff1A");
                 rootStyle.setProperty("--border", "#ffb70333");
-                break;
-            case "hacker":
-                rootStyle.setProperty("--bg", "#050505");
-                rootStyle.setProperty("--text", "#00ff00");
-                rootStyle.setProperty("--glass", "#00ff000A");
-                rootStyle.setProperty("--border", "#00ff0033");
+                rootStyle.setProperty("--border-hover", "#ffb7034D");
                 break;
         }
 
