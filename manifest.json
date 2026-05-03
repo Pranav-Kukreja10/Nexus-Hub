@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Nexus Hub",
+  "version": "1.0",
+  "description": "A custom productivity dashboard and tab manager.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

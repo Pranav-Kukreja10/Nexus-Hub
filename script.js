@@ -56,11 +56,48 @@ document.getElementById("search-input").addEventListener("keydown", function(e){
     }
 });
 
+// Voice Search
+const voiceSearchBtn = document.getElementById("voice-search-btn");
+if (voiceSearchBtn) {
+    voiceSearchBtn.addEventListener("click", () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.onstart = () => {
+                searchField.placeholder = "Listening...";
+                voiceSearchBtn.style.color = "var(--red)";
+            };
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                searchField.value = transcript;
+                searchButton.click();
+            };
+            recognition.onend = () => {
+                searchField.placeholder = "Search the web...";
+                voiceSearchBtn.style.color = "";
+            };
+            recognition.start();
+        } else {
+            alert("Voice search is not supported in this browser.");
+        }
+    });
+}
+
+// Image Search
+const imageSearchBtn = document.getElementById("image-search-btn");
+if (imageSearchBtn) {
+    imageSearchBtn.addEventListener("click", () => {
+        const imageUrl = prompt("Enter the URL of the image to search:");
+        if (imageUrl && imageUrl.trim() !== "") {
+            window.location.href = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl.trim())}`;
+        }
+    });
+}
+
 // Focus Timer
 
 const display = document.getElementById("timer-time");
-const startBtn = document.getElementById("timer-start");
-const stopBtn = document.getElementById("timer-stop");
+const toggleBtn = document.getElementById("timer-toggle");
 const resetBtn = document.getElementById("timer-reset");
 const plusBtn = document.getElementById("timer-plus");
 const minusBtn = document.getElementById("timer-minus");
@@ -76,26 +113,63 @@ function updateDisplay() {
     display.innerText = `${minutes}:${seconds}`;
 }
 
-startBtn.onclick = () => {
-    clearInterval(interval); 
+function playBeep() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
     
-    interval = setInterval(() => {
-        if (time > 0) {
-            time--;
-            updateDisplay();
-        } else {
-            clearInterval(interval);
-            alert("Time's up!");
-        }
-    }, 1000);
-};
+    const context = new AudioContext();
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
 
-stopBtn.onclick = () => {
-    clearInterval(interval); 
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 800; // 800Hz beep
+    
+    gainNode.gain.setValueAtTime(1, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.5);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.5);
+}
+
+let isRunning = false;
+
+toggleBtn.onclick = () => {
+    if (isRunning) {
+        clearInterval(interval);
+        isRunning = false;
+        toggleBtn.innerText = "Start";
+        toggleBtn.classList.remove("btn-ghost");
+    } else {
+        clearInterval(interval);
+        isRunning = true;
+        toggleBtn.innerText = "Stop";
+        toggleBtn.classList.add("btn-ghost");
+        interval = setInterval(() => {
+            if (time > 0) {
+                time--;
+                updateDisplay();
+            } else {
+                clearInterval(interval);
+                isRunning = false;
+                toggleBtn.innerText = "Start";
+                toggleBtn.classList.remove("btn-ghost");
+                playBeep();
+                setTimeout(() => {
+                    alert("Time's up!");
+                }, 50);
+            }
+        }, 1000);
+    }
 };
 
 resetBtn.onclick = () => {
     clearInterval(interval);
+    isRunning = false;
+    toggleBtn.innerText = "Start";
+    toggleBtn.classList.remove("btn-ghost");
     time = 25 * 60;
     updateDisplay();
 };
@@ -181,7 +255,8 @@ function loadTasks() {
     try {
         const raw = localStorage.getItem(TASKS_STORAGE_KEY);
         if (!raw) return [];
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
     } catch {
         return [];
     }
@@ -293,8 +368,9 @@ function addTask() {
 
 addTaskBtn.addEventListener("click", addTask);
 
-taskInput.addEventListener("keypress", function (event) {
+taskInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
+        event.preventDefault(); // Prevent default behavior (like form submission if it was inside a form)
         addTask();
     }
 });
@@ -637,3 +713,105 @@ baseInput.addEventListener("input", calculateConversion);
 baseCurr.addEventListener("change", fetchRates); 
 
 targetCurr.addEventListener("change", calculateConversion); 
+
+
+// ==========================================
+    // DAILY SCREEN TIME TRACKER LOGIC
+    // ==========================================
+    
+    let timeList = document.getElementById("time-list");
+    let resetTimeBtn = document.getElementById("reset-time");
+
+    function loadScreenTime() {
+        chrome.storage.local.get(["screenTime"], function(result) {
+            let allData = result.screenTime || {};
+            let today = new Date().toDateString();
+            
+            // ONLY look at the data for today
+            let data = allData[today] || {}; 
+
+            timeList.innerHTML = ""; 
+
+            // If today's data is empty, show the starting message
+            if (Object.keys(data).length === 0) {
+                timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Start browsing today to track time!</div>';
+                return;
+            }
+
+            let sites = [];
+            for (let domain in data) {
+                // DATA SANITATION: Ignore glitches like "null", "undefined", or blank names
+                if (domain !== "null" && domain !== "undefined" && domain !== "") {
+                    sites.push({ domain: domain, time: data[domain] });
+                }
+            }
+            
+            // Sort highest to lowest
+            sites.sort(function(a, b) { return b.time - a.time; });
+
+            let maxTime = sites.length > 0 ? sites[0].time : 0;
+            let displayCount = Math.min(sites.length, 3);
+            let sitesShown = 0;
+
+            for (let i = 0; i < sites.length; i++) {
+                if (sitesShown >= displayCount) break;
+
+                let site = sites[i];
+                let totalSeconds = Math.floor(site.time / 1000); 
+                let totalMinutes = Math.floor(site.time / 60000);
+                
+                // Show site if you've been on it for more than 5 seconds
+                if (totalSeconds > 5) {
+                    sitesShown++;
+                    let percentage = (site.time / maxTime) * 100;
+                    
+                    let timeString = "";
+                    if (totalMinutes >= 60) {
+                        let hours = Math.floor(totalMinutes / 60);
+                        let mins = totalMinutes % 60;
+                        timeString = hours + "h " + mins + "m";
+                    } else if (totalMinutes > 0) {
+                        timeString = totalMinutes + "m";
+                    } else {
+                        timeString = "< 1m"; // Shows this if under a minute
+                    }
+
+                    let siteItem = document.createElement("div");
+                    siteItem.className = "site-item";
+                    siteItem.innerHTML = `
+                        <div class="site-info">
+                            <span class="site-name">${site.domain}</span>
+                            <span class="site-time">${timeString}</span>
+                        </div>
+                        <div class="site-bar-track">
+                            <div class="site-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    `;
+                    timeList.appendChild(siteItem);
+                }
+            }
+            
+            if (sitesShown === 0) {
+                 timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Browsing under 5 seconds...</div>';
+            }
+        });
+    }
+
+    // Run it on load
+    loadScreenTime();
+
+    // The Refresh/Reset button safely wipes ONLY today's data to clear out glitches
+    if (resetTimeBtn) {
+        resetTimeBtn.addEventListener("click", function() {
+            let today = new Date().toDateString();
+            
+            chrome.storage.local.get(["screenTime"], function(result) {
+                let allData = result.screenTime || {};
+                allData[today] = {}; // Erase only today
+                
+                chrome.storage.local.set({ screenTime: allData }, function() {
+                    loadScreenTime(); // Refresh the screen automatically
+                });
+            });
+        });
+    }

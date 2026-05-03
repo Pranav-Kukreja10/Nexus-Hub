@@ -60,8 +60,8 @@
             <input type="text" class="search-input" id="search-input" placeholder="Search the web..."
                 autocomplete="off">
 
-            <span class="material-symbols-rounded search-action-icon" title="Voice Search">mic</span>
-            <span class="material-symbols-rounded search-action-icon" title="Search by Image">image_search</span>
+            <span class="material-symbols-rounded search-action-icon" id="voice-search-btn" title="Voice Search">mic</span>
+            <span class="material-symbols-rounded search-action-icon" id="image-search-btn" title="Search by Image">image_search</span>
 
             <button class="search-submit" id="search-btn">
                 <span class="material-symbols-rounded">search</span>
@@ -103,7 +103,7 @@
                 <!-- Center Column Row 1 -->
                 <div class="dash-row dash-row-1">
                     <!-- Music card -->
-                    <div class="card col-music">
+                    <!-- <div class="card col-music">
                         <div class="card-head">
                             <span class="material-symbols-rounded">headphones</span>
                             <h3>Now Playing</h3>
@@ -122,6 +122,18 @@
                                 <span class="material-symbols-rounded media-btn play-btn">play_circle</span>
                                 <span class="material-symbols-rounded media-btn">skip_next</span>
                             </div>
+                        </div>
+                    </div> -->
+                    
+                    <!-- Screen Time Monitoring -->
+                    <div class="card col-screentime">
+                        <div class="card-head">
+                            <span class="material-symbols-rounded">timelapse</span>
+                            <h3>Screen Time</h3>
+                            <span class="material-symbols-rounded card-edit" id="reset-time" title="Reset Data">refresh</span>
+                        </div>
+                        <div class="card-content" id="time-list">
+                            <div class="theme-hint">Gathering data...</div>
                         </div>
                     </div>
 
@@ -143,8 +155,7 @@
                         </div>
 
                         <div class="timer-btns">
-                            <button class="btn" id="timer-start">Start</button>
-                            <button class="btn btn-ghost" id="timer-stop">Stop</button>
+                            <button class="btn" id="timer-toggle">Start</button>
                             <button class="btn btn-ghost" id="timer-reset">Reset</button>
                         </div>
                     </div>
