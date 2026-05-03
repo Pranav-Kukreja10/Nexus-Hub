@@ -255,9 +255,6 @@
         <span class="quote-author" id="quote-author">— Kent Beck</span>
     </div>
 
-    <!-- Edit button  -->
-    <button class="edit-btn" title="Edit Theme"><span class="material-symbols-rounded">edit</span></button>
-
     <!-- AI tools Dock  -->
     <div class="ai-dock">
         <div class="ai-menu">
@@ -272,6 +269,65 @@
         </div>
         <div class="ai-trigger"><span class="material-symbols-rounded ai-icon">auto_awesome</span></div>
     </div>
+
+    <!-- Theme Dock — button + popup as one unit -->
+    <div class="theme-dock">
+        <div id="theme-popup" class="theme-popup">
+            <div class="theme-popup-head">
+                <span class="material-symbols-rounded">palette</span>
+                <h3>Theme</h3>
+                <span class="theme-hint">Hover to preview</span>
+            </div>
+            <div class="theme-swatches">
+                <button class="theme-btn" data-theme="dark" title="Default Dark">
+                    <span class="swatch-dot" style="background:#1a1d2e;border-color:#4a4d6e"></span>
+                    <span class="swatch-name">Dark</span>
+                </button>
+                <button class="theme-btn" data-theme="light" title="Clean Light">
+                    <span class="swatch-dot" style="background:#f4f5f9;border-color:#c8cad4"></span>
+                    <span class="swatch-name">Light</span>
+                </button>
+                <button class="theme-btn" data-theme="gradient" title="Aurora Gradient">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#7c6eff,#ff6eb4);border-color:transparent"></span>
+                    <span class="swatch-name">Aurora</span>
+                </button>
+                <button class="theme-btn" data-theme="ocean" title="Ocean Breeze">
+                    <span class="swatch-dot" style="background:#041b2d;border-color:#00e5ff"></span>
+                    <span class="swatch-name">Ocean</span>
+                </button>
+                <button class="theme-btn" data-theme="sunset" title="Sunset Glow">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#ff5722,#ff9800);border-color:transparent"></span>
+                    <span class="swatch-name">Sunset</span>
+                </button>
+                <button class="theme-btn" data-theme="vaporwave" title="Neon Pink">
+                    <span class="swatch-dot" style="background:#2b003a;border-color:#ff007f"></span>
+                    <span class="swatch-name">Neon</span>
+                </button>
+                <button class="theme-btn" data-theme="midnight" title="Midnight Gold">
+                    <span class="swatch-dot" style="background:#0a1128;border-color:#ffb703"></span>
+                    <span class="swatch-name">Midnight</span>
+                </button>
+                <button class="theme-btn" data-theme="hacker" title="Matrix Hacker">
+                    <span class="swatch-dot" style="background:#050505;border-color:#00ff00"></span>
+                    <span class="swatch-name">Hacker</span>
+                </button>
+            </div>
+            <div class="theme-custom-row">
+                <div class="color-picker-mini">
+                    <label for="custom-accent">Accent</label>
+                    <input type="color" id="custom-accent" value="#7c6eff">
+                </div>
+                <div class="color-picker-mini">
+                    <label for="custom-bg">Background</label>
+                    <input type="color" id="custom-bg" value="#0e1015">
+                </div>
+            </div>
+        </div>
+        <button class="edit-btn" title="Edit Theme">
+            <span class="material-symbols-rounded">palette</span>
+        </button>
+    </div>
+<!-- Script  -->
 <script src="script.js"></script>
 </body>
 

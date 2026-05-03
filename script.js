@@ -116,15 +116,55 @@ updateDisplay();
 
 // Note Local storage
 const note = document.getElementById("note-content");
+const NOTE_PLACEHOLDER = "Type here to start writing...";
 
-note.innerHTML = localStorage.getItem("note") || "";
+function setNotePlaceholder() {
+    note.textContent = NOTE_PLACEHOLDER;
+    note.classList.add("note-placeholder");
+}
+
+function clearNotePlaceholder() {
+    if (note.classList.contains("note-placeholder")) {
+        note.textContent = "";
+        note.classList.remove("note-placeholder");
+    }
+}
+
+const savedNote = localStorage.getItem("note");
+if (savedNote && savedNote.trim() !== "") {
+    note.textContent = savedNote;
+    note.classList.remove("note-placeholder");
+} else {
+    setNotePlaceholder();
+}
+
+note.addEventListener("focus", () => {
+    clearNotePlaceholder();
+});
+
+note.addEventListener("blur", () => {
+    const content = note.textContent.trim();
+    if (content === "") {
+        localStorage.removeItem("note");
+        setNotePlaceholder();
+    } else {
+        localStorage.setItem("note", note.textContent);
+    }
+});
 
 note.addEventListener("input", () => {
-    localStorage.setItem("note", note.innerHTML);
+    if (!note.classList.contains("note-placeholder")) {
+        const content = note.textContent.trim();
+        if (content === "") {
+            localStorage.removeItem("note");
+        } else {
+            localStorage.setItem("note", note.textContent);
+        }
+    }
 });
 
 
-// Daily Tasks — localStorage-backed with 24-hour auto-expiry
+// Daily Tasks 
 
 const taskInput = document.getElementById("task-input");
 const addTaskBtn = document.getElementById("add-task-btn");
@@ -133,9 +173,9 @@ const progressText = document.getElementById("task-progress-text");
 const progressBar = document.getElementById("task-progress-bar");
 
 const TASKS_STORAGE_KEY = "nexus_daily_tasks";
-const TASK_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const TASK_TTL_MS = 24 * 60 * 60 * 1000; 
 
-// --- Persistence helpers ---
+
 
 function loadTasks() {
     try {
@@ -160,11 +200,11 @@ function getTasksFromStorage() {
     let tasks = loadTasks();
     const before = tasks.length;
     tasks = pruneExpiredTasks(tasks);
-    if (tasks.length !== before) saveTasks(tasks); // persist the pruning
+    if (tasks.length !== before) saveTasks(tasks); 
     return tasks;
 }
 
-// --- DOM rendering ---
+
 
 function updateProgress() {
     const allTasks = tasksContainer.getElementsByClassName("task-item");
@@ -209,7 +249,7 @@ function createTaskElement(taskData) {
 
     deleteButton.addEventListener("click", function () {
         newTaskItem.remove();
-        // Persist deletion
+  
         let tasks = loadTasks();
         tasks = tasks.filter(t => t.id !== taskData.id);
         saveTasks(tasks);
@@ -241,7 +281,7 @@ function addTask() {
         createdAt: Date.now()
     };
 
-    // Persist first, then render
+   
     const tasks = loadTasks();
     tasks.push(taskData);
     saveTasks(tasks);
@@ -259,7 +299,6 @@ taskInput.addEventListener("keypress", function (event) {
     }
 });
 
-// --- Initialise on page load ---
 renderAllTasks();
 
 
@@ -267,6 +306,7 @@ renderAllTasks();
 
 const notesArea = document.getElementById("note-content"); 
 const savedNotes = localStorage.getItem("nexusANotes"); 
+
 
 if (savedNotes != null) {
     notesArea.innerHTML = savedNotes; 
@@ -278,4 +318,265 @@ notesArea.addEventListener("input", function () {
 });
 
 
+//Theme
 
+
+// ==========================================
+    // THEME & CUSTOMIZATION LOGIC
+    // ==========================================
+
+    let editThemeBtn = document.querySelector(".edit-btn");
+    let themePopup = document.getElementById("theme-popup");
+    let themeButtons = document.querySelectorAll(".theme-btn");
+    let accentPicker = document.getElementById("custom-accent");
+    let bgPicker = document.getElementById("custom-bg");
+    let rootStyle = document.documentElement.style;
+
+    // Memory variables to remember user choices
+    let savedTheme = localStorage.getItem("nexusTheme") || "dark";
+    let savedAccent = localStorage.getItem("nexusAccent") || "#7c6eff";
+    let savedBg = localStorage.getItem("nexusBg") || "#0e1015";
+
+    // Function to apply preset themes
+    function applyTheme(themeName) {
+        document.body.className = ""; 
+        
+        switch(themeName) {
+            case "dark":
+                rootStyle.setProperty("--bg", savedBg); // Uses custom bg for default mode
+                rootStyle.setProperty("--text", "#e8eaf2");
+                rootStyle.setProperty("--glass", "#FFFFFF0F");
+                rootStyle.setProperty("--border", "#FFFFFF17");
+                break;
+            case "light":
+                rootStyle.setProperty("--bg", "#f4f5f9");
+                rootStyle.setProperty("--text", "#1a1d2e");
+                rootStyle.setProperty("--glass", "#0000000A"); 
+                rootStyle.setProperty("--border", "#00000017");
+                break;
+            case "gradient":
+                rootStyle.setProperty("--bg", "transparent");
+                rootStyle.setProperty("--text", "#e8eaf2");
+                rootStyle.setProperty("--glass", "#FFFFFF0F");
+                rootStyle.setProperty("--border", "#FFFFFF17");
+                document.body.classList.add("bg-gradient");
+                break;
+            case "hacker":
+                rootStyle.setProperty("--bg", "#050505");
+                rootStyle.setProperty("--text", "#00ff00");
+                rootStyle.setProperty("--glass", "#00ff000A");
+                rootStyle.setProperty("--border", "#00ff0033");
+                break;
+            case "ocean":
+                rootStyle.setProperty("--bg", "#041b2d");
+                rootStyle.setProperty("--text", "#e0f7fa");
+                rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--border", "#00e5ff33");
+                break;
+            case "sunset":
+                rootStyle.setProperty("--bg", "#2b1104");
+                rootStyle.setProperty("--text", "#ffe0b2");
+                rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--border", "#ff572233");
+                break;
+            case "vaporwave":
+                rootStyle.setProperty("--bg", "#2b003a");
+                rootStyle.setProperty("--text", "#f8bbd0");
+                rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--border", "#ff007f33");
+                break;
+            case "midnight":
+                rootStyle.setProperty("--bg", "#0a1128");
+                rootStyle.setProperty("--text", "#fdf0d5");
+                rootStyle.setProperty("--glass", "#ffffff0A");
+                rootStyle.setProperty("--border", "#ffb70333");
+                break;
+            case "hacker":
+                rootStyle.setProperty("--bg", "#050505");
+                rootStyle.setProperty("--text", "#00ff00");
+                rootStyle.setProperty("--glass", "#00ff000A");
+                rootStyle.setProperty("--border", "#00ff0033");
+                break;
+        }
+
+        // Always ensure the accent color remains consistent across preset themes
+        rootStyle.setProperty("--accent", savedAccent);
+    }
+
+    // --- Open/Close Popup Logic ---
+    // 1. Clicking the button toggles the popup
+    editThemeBtn.addEventListener("click", function(event) {
+        event.stopPropagation();
+        themePopup.classList.toggle("show");
+        editThemeBtn.classList.toggle("active");
+    });
+
+    // 2. Clicking anywhere INSIDE the dock (popup + button) keeps it open
+    document.querySelector(".theme-dock").addEventListener("click", function(event) {
+        event.stopPropagation();
+    });
+
+    // 3. Clicking ANYWHERE ELSE on the document closes the popup
+    document.addEventListener("click", function() {
+        themePopup.classList.remove("show");
+        editThemeBtn.classList.remove("active");
+    });
+
+    // --- Preset Theme Hover/Click Logic ---
+    for (let i = 0; i < themeButtons.length; i++) {
+        let btn = themeButtons[i];
+        
+        btn.addEventListener("mouseover", function() {
+            applyTheme(btn.getAttribute("data-theme"));
+        });
+
+        btn.addEventListener("mouseout", function() {
+            applyTheme(savedTheme);
+        });
+
+        btn.addEventListener("click", function() {
+            savedTheme = btn.getAttribute("data-theme");
+            localStorage.setItem("nexusTheme", savedTheme);
+            applyTheme(savedTheme);
+        });
+    }
+
+    // --- Custom Color Pickers Logic ---
+    
+    // Accent Color Picker
+    accentPicker.addEventListener("input", function() {
+        rootStyle.setProperty("--accent", accentPicker.value);
+    });
+    accentPicker.addEventListener("change", function() {
+        savedAccent = accentPicker.value;
+        localStorage.setItem("nexusAccent", savedAccent);
+    });
+
+    // Background Color Picker
+    bgPicker.addEventListener("input", function() {
+        // Automatically switch to the "Default" theme so custom background works
+        savedTheme = "dark";
+        localStorage.setItem("nexusTheme", "dark");
+        document.body.className = ""; // Remove gradients if they were active
+        rootStyle.setProperty("--bg", bgPicker.value);
+    });
+    bgPicker.addEventListener("change", function() {
+        savedBg = bgPicker.value;
+        localStorage.setItem("nexusBg", savedBg);
+        applyTheme("dark"); // Refresh the default theme with the new background
+    });
+
+    // --- Initialize on Page Load ---
+    applyTheme(savedTheme);
+    accentPicker.value = savedAccent;
+    bgPicker.value = savedBg;
+
+
+// Weather
+
+let WeatherWidget = document.querySelector(".weather-widget");
+let tempDisplay = document.querySelector(".weather-temp");
+let descDisplay = document.querySelector(".weather-sub");
+let iconDisplay = document.querySelector(".weather-icon"); 
+
+let defaultLat = "30.9010"
+let defaultLon = "75.8573"
+let defaultCity = "Ludhiana"
+
+function fetchWeather(lat, lon, cityName) {
+    tempDisplay.innerText = "..."
+    descDisplay.innerText = cityName + " · Fetching...";
+
+    let apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current_weather=true";
+    
+    fetch(apiUrl)
+            .then(function(response) {
+                return response.json(); 
+            })
+            .then(function(data) {
+                let currentTemp = Math.round(data.current_weather.temperature);
+                let weatherCode = data.current_weather.weathercode;
+
+                tempDisplay.innerText = currentTemp + "°C";
+
+                let weatherDesc = "Clear";
+                let iconName = "sunny";
+
+                if (weatherCode === 0) {
+                    weatherDesc = "Clear Sky";
+                    iconName = "sunny";
+                } else if (weatherCode >= 1 && weatherCode <= 3) {
+                    weatherDesc = "Partly Cloudy";
+                    iconName = "partly_cloudy_day";
+                } else if (weatherCode === 45 || weatherCode === 48) {
+                    weatherDesc = "Foggy";
+                    iconName = "foggy";
+                } else if (weatherCode >= 51 && weatherCode <= 67) {
+                    weatherDesc = "Rain";
+                    iconName = "rainy";
+                } else if (weatherCode >= 71 && weatherCode <= 77) {
+                    weatherDesc = "Snow";
+                    iconName = "weather_snowy";
+                } else if (weatherCode >= 95) {
+                    weatherDesc = "Thunderstorm";
+                    iconName = "thunderstorm";
+                }
+
+                descDisplay.innerText = cityName + " · " + weatherDesc;
+                iconDisplay.innerText = iconName;
+            })
+            .catch(function(error) {
+                descDisplay.innerText = cityName + " · Offline";
+                tempDisplay.innerText = "--°C";
+                console.log("Weather API Error: " + error);
+            });
+    }
+function getUserLocation() {
+    if (navigator.geolocation) {
+        tempDisplay.innerText = "...";
+        descDisplay.innerText = "Locating..."; 
+
+        navigator.geolocation.getCurrentPosition(
+            // Scenario A: User clicked "Allow"
+            function(position) {
+                let userLat = position.coords.latitude; 
+                let userLon = position.coords.longitude;
+
+                // NEW: Use a Reverse Geocoding API to get the city name
+                let geoApiUrl = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + userLat + "&longitude=" + userLon + "&localityLanguage=en";
+
+                fetch(geoApiUrl)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        // Extract the city name. If 'city' is empty, try 'locality'. 
+                        // If both fail, fall back to "Local".
+                        let actualCityName = data.city || data.locality || "Local";
+                        
+                        // Now that we have the real name, fetch the weather!
+                        fetchWeather(userLat, userLon, actualCityName);
+                    })
+                    .catch(function(error) {
+                        // If the name lookup fails for some reason, just use "Local" so the app doesn't crash
+                        console.log("City lookup failed: " + error);
+                        fetchWeather(userLat, userLon, "Local");
+                    });
+            },
+            // Scenario B: User clicked "Block"
+            function(error) {
+                console.log("Location access Denied or failed! Using Default Location");
+                fetchWeather(defaultLat, defaultLon, defaultCity);
+            }
+        );
+    } else {
+        // Scenario C: Browser doesn't support geolocation
+        fetchWeather(defaultLat, defaultLon, defaultCity);
+    }
+}
+
+getUserLocation();
+
+WeatherWidget.addEventListener("click", function() {
+    getUserLocation(); 
+});
