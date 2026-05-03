@@ -122,7 +122,7 @@ function playBeep() {
     const gainNode = context.createGain();
 
     oscillator.type = 'sine';
-    oscillator.frequency.value = 800; // 800Hz beep
+    oscillator.frequency.value = 800; 
     
     gainNode.gain.setValueAtTime(1, context.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.5);
@@ -312,7 +312,7 @@ function createTaskElement(taskData) {
     function toggleTask() {
         const isDone = newTaskItem.classList.toggle("done");
         checkButton.innerText = isDone ? "check_circle" : "radio_button_unchecked";
-        // Persist toggle
+       
         const tasks = loadTasks();
         const task = tasks.find(t => t.id === taskData.id);
         if (task) { task.done = isDone; saveTasks(tasks); }
@@ -370,7 +370,7 @@ addTaskBtn.addEventListener("click", addTask);
 
 taskInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
-        event.preventDefault(); // Prevent default behavior (like form submission if it was inside a form)
+        event.preventDefault(); 
         addTask();
     }
 });
@@ -396,11 +396,6 @@ notesArea.addEventListener("input", function () {
 
 //Theme
 
-
-// ==========================================
-    // THEME & CUSTOMIZATION LOGIC
-    // ==========================================
-
     let editThemeBtn = document.querySelector(".edit-btn");
     let themePopup = document.getElementById("theme-popup");
     let themeButtons = document.querySelectorAll(".theme-btn");
@@ -408,18 +403,18 @@ notesArea.addEventListener("input", function () {
     let bgPicker = document.getElementById("custom-bg");
     let rootStyle = document.documentElement.style;
 
-    // Memory variables to remember user choices
+
     let savedTheme = localStorage.getItem("nexusTheme") || "dark";
     let savedAccent = localStorage.getItem("nexusAccent") || "#7c6eff";
     let savedBg = localStorage.getItem("nexusBg") || "#0e1015";
 
-    // Function to apply preset themes
+  
     function applyTheme(themeName) {
         document.body.className = ""; 
         
         switch(themeName) {
             case "dark":
-                rootStyle.setProperty("--bg", savedBg); // Uses custom bg for default mode
+                rootStyle.setProperty("--bg", savedBg); 
                 rootStyle.setProperty("--text", "#e8eaf2");
                 rootStyle.setProperty("--glass", "#FFFFFF0F");
                 rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
@@ -486,30 +481,29 @@ notesArea.addEventListener("input", function () {
                 break;
         }
 
-        // Always ensure the accent color remains consistent across preset themes
+
         rootStyle.setProperty("--accent", savedAccent);
     }
 
-    // --- Open/Close Popup Logic ---
-    // 1. Clicking the button toggles the popup
+
     editThemeBtn.addEventListener("click", function(event) {
         event.stopPropagation();
         themePopup.classList.toggle("show");
         editThemeBtn.classList.toggle("active");
     });
 
-    // 2. Clicking anywhere INSIDE the dock (popup + button) keeps it open
+
     document.querySelector(".theme-dock").addEventListener("click", function(event) {
         event.stopPropagation();
     });
 
-    // 3. Clicking ANYWHERE ELSE on the document closes the popup
+
     document.addEventListener("click", function() {
         themePopup.classList.remove("show");
         editThemeBtn.classList.remove("active");
     });
 
-    // --- Preset Theme Hover/Click Logic ---
+  
     for (let i = 0; i < themeButtons.length; i++) {
         let btn = themeButtons[i];
         
@@ -528,9 +522,8 @@ notesArea.addEventListener("input", function () {
         });
     }
 
-    // --- Custom Color Pickers Logic ---
-    
-    // Accent Color Picker
+
+  
     accentPicker.addEventListener("input", function() {
         rootStyle.setProperty("--accent", accentPicker.value);
     });
@@ -539,18 +532,17 @@ notesArea.addEventListener("input", function () {
         localStorage.setItem("nexusAccent", savedAccent);
     });
 
-    // Background Color Picker
     bgPicker.addEventListener("input", function() {
-        // Automatically switch to the "Default" theme so custom background works
+        
         savedTheme = "dark";
         localStorage.setItem("nexusTheme", "dark");
-        document.body.className = ""; // Remove gradients if they were active
+        document.body.className = ""; 
         rootStyle.setProperty("--bg", bgPicker.value);
     });
     bgPicker.addEventListener("change", function() {
         savedBg = bgPicker.value;
         localStorage.setItem("nexusBg", savedBg);
-        applyTheme("dark"); // Refresh the default theme with the new background
+        applyTheme("dark"); 
     });
 
     // --- Initialize on Page Load ---
@@ -726,10 +718,7 @@ baseCurr.addEventListener("change", fetchRates);
 targetCurr.addEventListener("change", calculateConversion); 
 
 
-// ==========================================
-    // DAILY SCREEN TIME TRACKER LOGIC
-    // ==========================================
-    
+
     let timeList = document.getElementById("time-list");
     let resetTimeBtn = document.getElementById("reset-time");
 
@@ -808,20 +797,20 @@ targetCurr.addEventListener("change", calculateConversion);
         });
     }
 
-    // Run it on load
+    
     loadScreenTime();
 
-    // The Refresh/Reset button safely wipes ONLY today's data to clear out glitches
+
     if (resetTimeBtn) {
         resetTimeBtn.addEventListener("click", function() {
             let today = new Date().toDateString();
             
             chrome.storage.local.get(["screenTime"], function(result) {
                 let allData = result.screenTime || {};
-                allData[today] = {}; // Erase only today
+                allData[today] = {}; 
                 
                 chrome.storage.local.set({ screenTime: allData }, function() {
-                    loadScreenTime(); // Refresh the screen automatically
+                    loadScreenTime(); 
                 });
             });
         });
