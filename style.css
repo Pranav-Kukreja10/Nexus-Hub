@@ -760,6 +760,35 @@ body {
     flex: 1;
 }
 
+.conv-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 29px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    width: 100%;
+}
+
+.conv-input::-webkit-outer-spin-button,
+.conv-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+select.conv-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
+}
+
+select.conv-dropdown option {
+    background: var(--bg);
+    color: var(--text);
+}
+
 .conv-val {
     font-family: 'Outfit', sans-serif;
     font-size: 29px;

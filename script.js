@@ -580,3 +580,60 @@ getUserLocation();
 WeatherWidget.addEventListener("click", function() {
     getUserLocation(); 
 });
+
+// Currency 
+
+let baseInput = document.getElementById("base-input"); 
+let targetVal = document.getElementById("target-val"); 
+let baseCurr = document.getElementById("base-curr");
+let targetCurr = document.getElementById("target-curr"); 
+let convFooter = document.getElementById("conv-date"); 
+
+let exchangeRates = {}; 
+
+function fetchRates() {
+    let base = baseCurr.value; 
+    let apiURL = "https://open.er-api.com/v6/latest/" + base;
+
+    fetch(apiURL)
+        .then(function(response) {
+            return response.json(); 
+        })
+        .then(function(data){
+            exchangeRates = data.rates; 
+
+            let updateDate = data.time_last_update_utc.slice(0, 16);
+            convFooter.innerText = "Rates from: " + updateDate;
+
+            calculateConversion();
+        }) 
+        .catch(function(error){
+            targetVal.innerText = "Err"; 
+            convFooter.innerText = " Failed to load rates.";
+            console.log("Currrency API Error: " + error);
+        })
+}
+
+function calculateConversion() {
+    let amount = parseFloat(baseInput.value); 
+    let target = targetCurr.value; 
+
+    if (isNaN(amount)) {
+        targetVal.innerText = "0.00";
+        return 
+    }
+
+    let rate = exchangeRates[target]; 
+
+    let result = amount * rate; 
+
+    targetVal.innerText = result.toFixed(2);
+}
+
+fetchRates(); 
+
+baseInput.addEventListener("input", calculateConversion);
+
+baseCurr.addEventListener("change", fetchRates); 
+
+targetCurr.addEventListener("change", calculateConversion); 

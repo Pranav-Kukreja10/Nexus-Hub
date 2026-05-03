@@ -160,22 +160,32 @@
                         </div>
                         <div class="converter-body">
                             <div class="conv-block">
-                                <div class="conv-val">1.00</div>
-                                <button class="conv-dropdown" id="base-curr-btn">
-
-                                    USD <span class="material-symbols-rounded">expand_more</span>
-                                </button>
+                                <input type="number" class="conv-input" id="base-input" value="1">
+                                
+                                <select class="conv-dropdown" id="base-curr">
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="AUD">AUD</option>
+                                </select>
                             </div>
+                            
                             <span class="material-symbols-rounded conv-icon">sync_alt</span>
+                            
                             <div class="conv-block">
-                                <div class="conv-val accent">92.56</div>
-                                <button class="conv-dropdown" id="target-curr-btn">
-
-                                    INR <span class="material-symbols-rounded">expand_more</span>
-                                </button>
+                                <div class="conv-val accent" id="target-val">--</div>
+                                
+                                <select class="conv-dropdown" id="target-curr">
+                                    <option value="INR" selected>INR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="AUD">AUD</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="conv-footer"><span class="change-up">🔺 0.12% past 24 hours</span></div>
+                        <div class="conv-footer" id="conv-date">Updating live rates...</div>
                     </div>
 
                     <!-- Google Apps Widget  -->
