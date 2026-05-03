@@ -263,4 +263,19 @@ taskInput.addEventListener("keypress", function (event) {
 renderAllTasks();
 
 
+// Quick Notes
+
+const notesArea = document.getElementById("note-content"); 
+const savedNotes = localStorage.getItem("nexusANotes"); 
+
+if (savedNotes != null) {
+    notesArea.innerHTML = savedNotes; 
+}
+
+notesArea.addEventListener("input", function () {
+    let currentContent = notesArea.innerHTML; 
+    localStorage.setItem("nexusNotes", currentContent);
+});
+
+
 
