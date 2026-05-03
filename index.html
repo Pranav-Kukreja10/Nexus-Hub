@@ -144,7 +144,7 @@
 
                         <div class="timer-btns">
                             <button class="btn" id="timer-start">Start</button>
-                            <button class="btn" id="timer-stop">Stop</button>
+                            <button class="btn btn-ghost" id="timer-stop">Stop</button>
                             <button class="btn btn-ghost" id="timer-reset">Reset</button>
                         </div>
                     </div>
@@ -225,27 +225,12 @@
                     <div class="card-head">
                         <span class="material-symbols-rounded">checklist</span>
                         <h3>Daily Tasks</h3>
-                        <span class="material-symbols-rounded card-edit" title="Edit Tasks">edit</span>
+                        <!-- <span class="material-symbols-rounded card-edit" title="Edit Tasks">edit</span> -->
                     </div>
                     <div class="card-content" id="tasks-container">
-                        <div class="task-item">
-                            <span class="material-symbols-rounded task-check">radio_button_unchecked</span>
-                            <span class="task-text">task 1s</span>
-                            <span class="material-symbols-rounded task-del">delete</span>
-                        </div>
-                        <div class="task-item">
-                            <span class="material-symbols-rounded task-check">radio_button_unchecked</span>
-                            <span class="task-text">Task 2</span>
-                            <span class="material-symbols-rounded task-del">delete</span>
-                        </div>
-                        <div class="task-item" id="done">
-                            <span class="material-symbols-rounded task-check">check_circle</span>
-                            <span class="task-text">Task 3</span>
-                            <span class="material-symbols-rounded task-del">delete</span>
-                        </div>
                     </div>
                     <div class="add-task-row">
-                        <input type="text" class="task-input" id="task-input" placeholder="Add a task...">
+                        <input type="text" class="task-input" id="task-input" placeholder="Add a task..." autocomplete="off">
                         <button class="btn btn-small" id="add-task-btn">Add</button>
                     </div>
                     <div class="task-progress">

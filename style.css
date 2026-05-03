@@ -528,12 +528,12 @@ body {
     flex: 1;
 }
 
-#done .task-text {
+.done .task-text {
     opacity: 0.4;
     text-decoration: line-through;
 }
 
-#done .task-check {
+.done .task-check {
     color: var(--green);
 }
 
