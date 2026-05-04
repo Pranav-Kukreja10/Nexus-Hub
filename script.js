@@ -59,191 +59,133 @@ document.getElementById("search-input").addEventListener("keydown", function(e){
 // Focus Timer
 
 const display = document.getElementById("timer-time");
-const toggleBtn = document.getElementById("timer-toggle");
+const startBtn = document.getElementById("timer-start");
+const stopBtn = document.getElementById("timer-stop");
 const resetBtn = document.getElementById("timer-reset");
 const plusBtn = document.getElementById("timer-plus");
 const minusBtn = document.getElementById("timer-minus");
 
-let time = 25 * 60; 
+let time = 25 * 60;
 let interval;
+
+window.onload = () => {
+    const savedTime = localStorage.getItem("time");
+
+    if (savedTime) {
+        time = parseInt(savedTime);
+    }
+
+    updateDisplay();
+};
 
 function updateDisplay() {
     let minutes = Math.floor(time / 60);
     let seconds = time % 60;
 
     seconds = seconds < 10 ? "0" + seconds : seconds;
+
     display.innerText = `${minutes}:${seconds}`;
 }
 
-let isRunning = false;
+function saveTimer() {
+    localStorage.setItem("time", time);
+}
 
-toggleBtn.onclick = () => {
-    if (isRunning) {
-        clearInterval(interval);
-        isRunning = false;
-        toggleBtn.innerText = "Start";
-        toggleBtn.classList.remove("btn-ghost");
-    } else {
-        clearInterval(interval);
-        isRunning = true;
-        toggleBtn.innerText = "Stop";
-        toggleBtn.classList.add("btn-ghost");
-        interval = setInterval(() => {
-            if (time > 0) {
-                time--;
-                updateDisplay();
-            } else {
-                clearInterval(interval);
-                isRunning = false;
-                toggleBtn.innerText = "Start";
-                toggleBtn.classList.remove("btn-ghost");
-         
-                setTimeout(() => {
-                    alert("Time's up!");
-                }, 50);
-            }
-        }, 1000);
-    }
+startBtn.onclick = () => {
+    clearInterval(interval);
+
+    interval = setInterval(() => {
+        if (time > 0) {
+            time--;
+            updateDisplay();
+            saveTimer();
+        } else {
+            clearInterval(interval);
+            alert("Time's up!");
+        }
+    }, 1000);
+};
+
+stopBtn.onclick = () => {
+    clearInterval(interval);
 };
 
 resetBtn.onclick = () => {
     clearInterval(interval);
-    isRunning = false;
-    toggleBtn.innerText = "Start";
-    toggleBtn.classList.remove("btn-ghost");
     time = 25 * 60;
     updateDisplay();
+    saveTimer();
 };
 
 plusBtn.onclick = () => {
     time += 60;
     updateDisplay();
+    saveTimer();
 };
 
 minusBtn.onclick = () => {
     if (time > 60) {
         time -= 60;
         updateDisplay();
+        saveTimer();
     }
 };
-
-updateDisplay();
-
-
 
 
 // Daily Tasks 
 
-const taskInput = document.getElementById("task-input");
-const addTaskBtn = document.getElementById("add-task-btn");
-const tasksContainer = document.getElementById("tasks-container");
-const progressText = document.getElementById("task-progress-text");
-const progressBar = document.getElementById("task-progress-bar");
+const btn = document.getElementById("add-task-btn");
+const input = document.getElementById("task-input");
+const container = document.getElementById("tasks-container");
 
-function updateProgress(){
-    const allTasks = document.querySelectorAll(".task-item");
-    const doneTasks = document.querySelectorAll(".task-item.done"); 
+window.onload = () => {
+    container.innerHTML = localStorage.getItem("tasks") || "";
+};
 
-    const totalCount = allTasks.length; 
-    const doneCount = doneTasks.length; 
+btn.onclick = () => {
+    const text = input.value.trim();
+    if (!text) return;
 
-    progressText.innerText = `${doneCount} / ${totalCount} done`;
+    const task = document.createElement("div");
+    task.className = "task-item";
 
-    if (totalCount === 0) {
-        progressBar.style.width = "0%";
-    }
-    else{
-        const percentage = (doneCount / totalCount) * 100; 
-        progressBar.style.width = percentage + "%"; 
-    }
-} 
-
-function saveTasks() {
-    const tasksToSave = []; 
-    const allTasks = document.querySelectorAll(".task-item");
-
-    for (let i = 0; i < allTasks.length; i++) {
-        const taskElement = allTasks[i]; 
-        const text = taskElement.querySelector(".task-text").innerText;
-        const isDone = taskElement.classList.contains("done");
-        
-        tasksToSave.push({text: text, done: isDone});
-    }
-
-    localStorage.setItem("daily_tasks", JSON.stringify(tasksToSave));
-    updateProgress();
-}
-
-function createTaskElement(taskText, isDone) {
-    const taskDiv = document.createElement("div"); 
-    taskDiv.className = "task-item";
-
-    if (isDone) {
-        taskDiv.classList.add("done"); 
-    }
-
-    let icon = isDone ? "check_circle" : "radio_button_unchecked";
-    taskDiv.innerHTML = `
-    <span class="material-symbols-rounded task-check">${icon}</span>
-    <span class="task-text">${taskText}</span>
-    <span class="material-symbols-rounded task-del">delete</span>
+    task.innerHTML = `
+        <span class="material-symbols-rounded task-check">radio_button_unchecked</span>
+        <span class="task-text">${text}</span>
+        <span class="material-symbols-rounded task-del">delete</span>
     `;
 
-    const checkBtn = taskDiv.querySelector(".task-check"); 
-    const deleteBtn = taskDiv.querySelector(".task-del"); 
+    container.appendChild(task);
+    input.value = "";
 
-    checkBtn.addEventListener("click", function() {
-        taskDiv.classList.toggle("done"); 
+    saveTasks(); 
+};
 
-        if (taskDiv.classList.contains("done")){
-            checkBtn.innerText = "check_circle";
-        }
-        else{
-            checkBtn.innerText = "radio_button_unchecked";
-        }
+container.addEventListener("click", (e) => {
 
+    if (e.target.classList.contains("task-del")) {
+        e.target.parentElement.remove();
         saveTasks();
-    });
+    }
 
-    deleteBtn.addEventListener("click", function() {
-        taskDiv.remove(); 
-        saveTasks();  
-    }); 
+    else if (e.target.classList.contains("task-check")) {
+        const text = e.target.nextElementSibling;
 
-    tasksContainer.appendChild(taskDiv); 
-}
+        if (text.classList.contains("completed")) {
+            text.classList.remove("completed");
+            e.target.textContent = "radio_button_unchecked";
+        } else {
+            text.classList.add("completed");
+            e.target.textContent = "check_circle";
+        }
 
-addTaskBtn.addEventListener("click", function() {
-    const text = taskInput.value.trim();
-
-    if (text != ""){
-        createTaskElement(text, false); 
-        taskInput.value = ""; 
         saveTasks();
     }
 });
 
-taskInput.addEventListener("keydown", function(event){
-    if(event.key === "Enter"){
-        addTaskBtn.click();
-    }
-});
-
-
-function loadTasks(){
-    const saveData = localStorage.getItem("daily_tasks"); 
-
-    if (saveData) {
-        const parsedTasks = JSON.parse(saveData);
-
-        for (let i = 0; i < parsedTasks.length; i++){
-            createTaskElement(parsedTasks[i].text, parsedTasks[i].done); 
-        }
-    }
-    updateProgress(); 
+function saveTasks() {
+    localStorage.setItem("tasks", container.innerHTML);
 }
-
-loadTasks(); 
 
  
 // Quick Notes
