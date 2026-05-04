@@ -733,8 +733,6 @@ micBtn.addEventListener("click", function () {
 
 // SCHEDULE EDIT
 
-
-
 let schedules = document.querySelectorAll(".schedule-item");
 
 schedules.forEach(function (item) {
