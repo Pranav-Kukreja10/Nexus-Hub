@@ -668,3 +668,72 @@ function loadScreenTime() {
 
 
 loadScreenTime();
+
+// ======================
+// QUICK LINKS WORKING
+// ======================
+const links = document.querySelectorAll(".link-item");
+
+links[0].href = "https://github.com";
+links[1].href = "https://youtube.com";
+links[2].href = "https://meet.google.com";
+links[3].href = "https://reddit.com";
+
+
+// ======================
+// AUTO CHANGING QUOTES
+// ======================
+const quotes = [
+    { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
+    { text: "Code is like humor. When you have to explain it, it’s bad.", author: "Cory House" },
+    { text: "First, solve the problem. Then, write the code.", author: "John Johnson" }
+];
+
+const quoteText = document.getElementById("quote-text");
+const quoteAuthor = document.getElementById("quote-author");
+
+function changeQuote() {
+    let random = Math.floor(Math.random() * quotes.length);
+    quoteText.innerText = `"${quotes[random].text}"`;
+    quoteAuthor.innerText = "— " + quotes[random].author;
+}
+
+// Change every 10 sec
+setInterval(changeQuote, 10000);
+
+
+// ======================
+// VOICE SEARCH (BASIC)
+// ======================
+const micBtn = document.querySelector('[title="Voice Search"]');
+
+micBtn.addEventListener("click", function () {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+    recognition.onresult = function (event) {
+        document.getElementById("search-input").value =
+            event.results[0][0].transcript;
+    };
+
+    recognition.start();
+});
+
+// ======================
+// SUPER SIMPLE SCHEDULE EDIT
+// ======================
+
+// select all schedule items
+let schedules = document.querySelectorAll(".schedule-item");
+
+// click any schedule to edit it
+schedules.forEach(function (item) {
+    
+    item.onclick = function () {
+        let newText = prompt("Edit schedule:", item.innerText);
+
+        if (newText) {
+            item.innerText = newText;
+        }
+    };
+
+});
