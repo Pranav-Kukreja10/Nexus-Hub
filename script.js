@@ -526,9 +526,9 @@ let tempDisplay = document.querySelector(".weather-temp");
 let descDisplay = document.querySelector(".weather-sub");
 let iconDisplay = document.querySelector(".weather-icon"); 
 
-let defaultLat = "30.9010"
-let defaultLon = "75.8573"
-let defaultCity = "Ludhiana"
+let defaultLat = "30.3059"
+let defaultLon = "76.3931"
+let defaultCity = "Chitkara University"
 
 function fetchWeather(lat, lon, cityName) {
     tempDisplay.innerText = "..."
