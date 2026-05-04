@@ -702,7 +702,6 @@ if (resetTimeBtn) {
                 loadScreenTime(); 
             });
         });
-<<<<<<< HEAD
     });
 }
 
@@ -797,6 +796,3 @@ function loadScreenTime() {
 
 
 loadScreenTime();
-=======
-    }
->>>>>>> 942bcd82c3b132035e8cb7a254661ab4ea771967
