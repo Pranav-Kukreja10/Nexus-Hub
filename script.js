@@ -44,7 +44,7 @@ searchButton.addEventListener("click", function () {
     let queryText = searchField.value.trim();
 
     if (queryText !== "") {
-        window.location.href = searchProvider.value + encodeURIComponent(queryText);
+        window.open(searchProvider.value + encodeURIComponent(queryText), "_blank");
     }
 });
 
