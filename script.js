@@ -309,33 +309,22 @@ loadTasks();
 
 const note = document.getElementById("note-content");
 
-
-note.textContent = localStorage.getItem("note") || "";
-
-
-note.addEventListener("input", () => {
-    const content = note.textContent.trim();
-    
-    if (content) {
-        localStorage.setItem("note", note.textContent);
-    } else {
-        localStorage.removeItem("note");
-    }
-});
-
-const notesArea = document.getElementById("note-content"); 
-const savedNotes = localStorage.getItem("nexusANotes"); 
-
-
-if (savedNotes != null) {
-    notesArea.innerHTML = savedNotes; 
+const savedNotes = localStorage.getItem("nexus_notes");
+if (savededNotes) {
+    note.innerHTML = savedNotes; 
 }
 
-notesArea.addEventListener("input", function () {
-    let currentContent = notesArea.innerHTML; 
-    localStorage.setItem("nexusNotes", currentContent);
-});
+note.addEventListener("input", function () {
+    const content = note.innerHTML.trim();
 
+    if (content) {
+        localStorage.setItem("nexus_notes", note.innerHTML);
+
+    } 
+    else{
+        localStorage.removeItem("nexus_notes");
+    }
+}); 
 
 //Theme
 
