@@ -669,20 +669,7 @@ function loadScreenTime() {
 
 loadScreenTime();
 
-// ======================
-// QUICK LINKS WORKING
-// ======================
-const links = document.querySelectorAll(".link-item");
-
-links[0].href = "https://github.com";
-links[1].href = "https://youtube.com";
-links[2].href = "https://meet.google.com";
-links[3].href = "https://reddit.com";
-
-
-// ======================
-// AUTO CHANGING QUOTES
-// ======================
+//Quotes 
 const quotes = [
     { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
     { text: "Code is like humor. When you have to explain it, it’s bad.", author: "Cory House" },
@@ -698,13 +685,11 @@ function changeQuote() {
     quoteAuthor.innerText = "— " + quotes[random].author;
 }
 
-// Change every 10 sec
+
 setInterval(changeQuote, 10000);
 
 
-// ======================
-// VOICE SEARCH (BASIC)
-// ======================
+// Voice Search 
 const micBtn = document.querySelector('[title="Voice Search"]');
 
 micBtn.addEventListener("click", function () {
@@ -718,14 +703,13 @@ micBtn.addEventListener("click", function () {
     recognition.start();
 });
 
-// ======================
-// SUPER SIMPLE SCHEDULE EDIT
-// ======================
 
-// select all schedule items
+// SCHEDULE EDIT
+
+
+
 let schedules = document.querySelectorAll(".schedule-item");
 
-// click any schedule to edit it
 schedules.forEach(function (item) {
     
     item.onclick = function () {
