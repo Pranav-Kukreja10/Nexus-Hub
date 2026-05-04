@@ -273,7 +273,7 @@ function applyTheme(themeName) {
             rootStyle.setProperty("--border-hover", "#FFFFFF2E");
             document.body.classList.add("bg-gradient");
             break;
-        case "hacker":
+        case "matrix":
             rootStyle.setProperty("--bg", "#050505");
             rootStyle.setProperty("--text", "#00ff00");
             rootStyle.setProperty("--glass", "#00ff000A");
