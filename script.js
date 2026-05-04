@@ -56,43 +56,43 @@ document.getElementById("search-input").addEventListener("keydown", function(e){
     }
 });
 
-// Voice Search
-const voiceSearchBtn = document.getElementById("voice-search-btn");
-if (voiceSearchBtn) {
-    voiceSearchBtn.addEventListener("click", () => {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.onstart = () => {
-                searchField.placeholder = "Listening...";
-                voiceSearchBtn.style.color = "var(--red)";
-            };
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                searchField.value = transcript;
-                searchButton.click();
-            };
-            recognition.onend = () => {
-                searchField.placeholder = "Search the web...";
-                voiceSearchBtn.style.color = "";
-            };
-            recognition.start();
-        } else {
-            alert("Voice search is not supported in this browser.");
-        }
-    });
-}
+// // Voice Search
+// const voiceSearchBtn = document.getElementById("voice-search-btn");
+// if (voiceSearchBtn) {
+//     voiceSearchBtn.addEventListener("click", () => {
+//         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+//         if (SpeechRecognition) {
+//             const recognition = new SpeechRecognition();
+//             recognition.onstart = () => {
+//                 searchField.placeholder = "Listening...";
+//                 voiceSearchBtn.style.color = "var(--red)";
+//             };
+//             recognition.onresult = (event) => {
+//                 const transcript = event.results[0][0].transcript;
+//                 searchField.value = transcript;
+//                 searchButton.click();
+//             };
+//             recognition.onend = () => {
+//                 searchField.placeholder = "Search the web...";
+//                 voiceSearchBtn.style.color = "";
+//             };
+//             recognition.start();
+//         } else {
+//             alert("Voice search is not supported in this browser.");
+//         }
+//     });
+// }
 
-// Image Search
-const imageSearchBtn = document.getElementById("image-search-btn");
-if (imageSearchBtn) {
-    imageSearchBtn.addEventListener("click", () => {
-        const imageUrl = prompt("Enter the URL of the image to search:");
-        if (imageUrl && imageUrl.trim() !== "") {
-            window.location.href = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl.trim())}`;
-        }
-    });
-}
+// // Image Search
+// const imageSearchBtn = document.getElementById("image-search-btn");
+// if (imageSearchBtn) {
+//     imageSearchBtn.addEventListener("click", () => {
+//         const imageUrl = prompt("Enter the URL of the image to search:");
+//         if (imageUrl && imageUrl.trim() !== "") {
+//             window.location.href = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl.trim())}`;
+//         }
+//     });
+// }
 
 // Focus Timer
 
@@ -188,54 +188,7 @@ minusBtn.onclick = () => {
 
 updateDisplay();
 
-// Note Local storage
-const note = document.getElementById("note-content");
-const NOTE_PLACEHOLDER = "Type here to start writing...";
 
-function setNotePlaceholder() {
-    note.textContent = NOTE_PLACEHOLDER;
-    note.classList.add("note-placeholder");
-}
-
-function clearNotePlaceholder() {
-    if (note.classList.contains("note-placeholder")) {
-        note.textContent = "";
-        note.classList.remove("note-placeholder");
-    }
-}
-
-const savedNote = localStorage.getItem("note");
-if (savedNote && savedNote.trim() !== "") {
-    note.textContent = savedNote;
-    note.classList.remove("note-placeholder");
-} else {
-    setNotePlaceholder();
-}
-
-note.addEventListener("focus", () => {
-    clearNotePlaceholder();
-});
-
-note.addEventListener("blur", () => {
-    const content = note.textContent.trim();
-    if (content === "") {
-        localStorage.removeItem("note");
-        setNotePlaceholder();
-    } else {
-        localStorage.setItem("note", note.textContent);
-    }
-});
-
-note.addEventListener("input", () => {
-    if (!note.classList.contains("note-placeholder")) {
-        const content = note.textContent.trim();
-        if (content === "") {
-            localStorage.removeItem("note");
-        } else {
-            localStorage.setItem("note", note.textContent);
-        }
-    }
-});
 
 
 // Daily Tasks 
@@ -246,139 +199,129 @@ const tasksContainer = document.getElementById("tasks-container");
 const progressText = document.getElementById("task-progress-text");
 const progressBar = document.getElementById("task-progress-bar");
 
-const TASKS_STORAGE_KEY = "nexus_daily_tasks";
-const TASK_TTL_MS = 24 * 60 * 60 * 1000; 
+function updateProgress(){
+    const allTasks = document.querySelectorAll(".task-item");
+    const doneTasks = document.querySelectorAll(".task-item.done"); 
 
+    const totalCount = allTasks.length; 
+    const doneCount = doneTasks.length; 
 
+    progressText.innerText = `${doneCount} / ${totalCount} done`;
 
-function loadTasks() {
-    try {
-        const raw = localStorage.getItem(TASKS_STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
+    if (totalCount === 0) {
+        progressBar.style.width = "0%";
     }
-}
+    else{
+        const percentage = (doneCount / totalCount) * 100; 
+        progressBar.style.width = percentage + "%"; 
+    }
+} 
 
-function saveTasks(tasks) {
-    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-}
+function saveTasks() {
+    const tasksToSave = []; 
+    const allTasks = document.querySelectorAll(".task-item");
 
-function pruneExpiredTasks(tasks) {
-    const now = Date.now();
-    return tasks.filter(t => (now - t.createdAt) < TASK_TTL_MS);
-}
-
-function getTasksFromStorage() {
-    let tasks = loadTasks();
-    const before = tasks.length;
-    tasks = pruneExpiredTasks(tasks);
-    if (tasks.length !== before) saveTasks(tasks); 
-    return tasks;
-}
-
-
-
-function updateProgress() {
-    const allTasks = tasksContainer.getElementsByClassName("task-item");
-    const completedTasks = tasksContainer.getElementsByClassName("done");
-
-    const totalCount = allTasks.length;
-    const completedCount = completedTasks.length;
-    const percentage = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
-
-    progressText.innerText = `${completedCount} / ${totalCount} done`;
-    progressBar.style.width = percentage + "%";
-}
-
-function createTaskElement(taskData) {
-    const newTaskItem = document.createElement("div");
-    newTaskItem.className = "task-item" + (taskData.done ? " done" : "");
-    newTaskItem.dataset.id = taskData.id;
-
-    newTaskItem.innerHTML =
-        '<span class="material-symbols-rounded task-check">' +
-            (taskData.done ? "check_circle" : "radio_button_unchecked") +
-        '</span>' +
-        '<span class="task-text">' + taskData.text + '</span>' +
-        '<span class="material-symbols-rounded task-del">delete</span>';
-
-    const checkButton = newTaskItem.querySelector(".task-check");
-    const deleteButton = newTaskItem.querySelector(".task-del");
-    const textSpan = newTaskItem.querySelector(".task-text");
-
-    function toggleTask() {
-        const isDone = newTaskItem.classList.toggle("done");
-        checkButton.innerText = isDone ? "check_circle" : "radio_button_unchecked";
-       
-        const tasks = loadTasks();
-        const task = tasks.find(t => t.id === taskData.id);
-        if (task) { task.done = isDone; saveTasks(tasks); }
-        updateProgress();
+    for (let i = 0; i < allTasks.length; i++) {
+        const taskElement = allTasks[i]; 
+        const text = taskElement.querySelector(".task-text").innerText;
+        const isDone = taskElement.classList.contains("done");
+        
+        tasksToSave.push({text: text, done: isDone});
     }
 
-    checkButton.addEventListener("click", toggleTask);
-    textSpan.addEventListener("click", toggleTask);
-
-    deleteButton.addEventListener("click", function () {
-        newTaskItem.remove();
-  
-        let tasks = loadTasks();
-        tasks = tasks.filter(t => t.id !== taskData.id);
-        saveTasks(tasks);
-        updateProgress();
-    });
-
-    return newTaskItem;
-}
-
-function renderAllTasks() {
-    tasksContainer.innerHTML = "";
-    const tasks = getTasksFromStorage();
-    tasks.forEach(taskData => {
-        tasksContainer.appendChild(createTaskElement(taskData));
-    });
+    localStorage.setItem("daily_tasks", JSON.stringify(tasksToSave));
     updateProgress();
 }
 
-// --- Adding a new task ---
+function createTaskElement(taskText, isDone) {
+    const taskDiv = document.createElement("div"); 
+    taskDiv.className = "task-item";
 
-function addTask() {
-    const taskTextValue = taskInput.value.trim();
-    if (taskTextValue === "") return;
+    if (isDone) {
+        taskDiv.classList.add("done"); 
+    }
 
-    const taskData = {
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-        text: taskTextValue,
-        done: false,
-        createdAt: Date.now()
-    };
+    let icon = isDone ? "check_circle" : "radio_button_unchecked";
+    taskDiv.innerHTML = `
+    <span class="material-symbols-rounded task-check">${icon}</span>
+    <span class="task-text">${taskText}</span>
+    <span class="material-symbols-rounded task-del">delete</span>
+    `;
 
-   
-    const tasks = loadTasks();
-    tasks.push(taskData);
-    saveTasks(tasks);
+    const checkBtn = taskDiv.querySelector(".task-check"); 
+    const deleteBtn = taskDiv.querySelector(".task-del"); 
 
-    tasksContainer.appendChild(createTaskElement(taskData));
-    taskInput.value = "";
-    updateProgress();
+    checkBtn.addEventListener("click", function() {
+        taskDiv.classList.toggle("done"); 
+
+        if (taskDiv.classList.contains("done")){
+            checkBtn.innerText = "check_circle";
+        }
+        else{
+            checkBtn.innerText = "radio_button_unchecked";
+        }
+
+        saveTasks();
+    });
+
+    deleteBtn.addEventListener("click", function() {
+        taskDiv.remove(); 
+        saveTasks();  
+    }); 
+
+    tasksContainer.appendChild(taskDiv); 
 }
 
-addTaskBtn.addEventListener("click", addTask);
+addTaskBtn.addEventListener("click", function() {
+    const text = taskInput.value.trim();
 
-taskInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-        event.preventDefault(); 
-        addTask();
+    if (text != ""){
+        createTaskElement(text, false); 
+        taskInput.value = ""; 
+        saveTasks();
     }
 });
 
-renderAllTasks();
+taskInput.addEventListener("keydown", function(event){
+    if(event.key === "Enter"){
+        addTaskBtn.click();
+    }
+});
 
 
+function loadTasks(){
+    const saveData = localStorage.getItem("daily_tasks"); 
+
+    if (saveData) {
+        const parsedTasks = JSON.parse(saveData);
+
+        for (let i = 0; i < parsedTasks.length; i++){
+            createTaskElement(parsedTasks[i].text, parsedTasks[i].done); 
+        }
+    }
+    updateProgress(); 
+}
+
+loadTasks(); 
+
+ 
 // Quick Notes
+
+const note = document.getElementById("note-content");
+
+
+note.textContent = localStorage.getItem("note") || "";
+
+
+note.addEventListener("input", () => {
+    const content = note.textContent.trim();
+    
+    if (content) {
+        localStorage.setItem("note", note.textContent);
+    } else {
+        localStorage.removeItem("note");
+    }
+});
 
 const notesArea = document.getElementById("note-content"); 
 const savedNotes = localStorage.getItem("nexusANotes"); 
@@ -396,159 +339,184 @@ notesArea.addEventListener("input", function () {
 
 //Theme
 
-    let editThemeBtn = document.querySelector(".edit-btn");
-    let themePopup = document.getElementById("theme-popup");
-    let themeButtons = document.querySelectorAll(".theme-btn");
-    let accentPicker = document.getElementById("custom-accent");
-    let bgPicker = document.getElementById("custom-bg");
-    let rootStyle = document.documentElement.style;
+let editThemeBtn = document.querySelector(".edit-btn");
+let themePopup = document.getElementById("theme-popup");
+let themeButtons = document.querySelectorAll(".theme-btn");
+let accentPicker = document.getElementById("custom-accent");
+let bgPicker = document.getElementById("custom-bg");
+let rootStyle = document.documentElement.style;
 
 
-    let savedTheme = localStorage.getItem("nexusTheme") || "dark";
-    let savedAccent = localStorage.getItem("nexusAccent") || "#7c6eff";
-    let savedBg = localStorage.getItem("nexusBg") || "#0e1015";
+let savedTheme = localStorage.getItem("nexusTheme");
+if (savedTheme === null) {
+    savedTheme = "dark"; 
+}
 
-  
-    function applyTheme(themeName) {
-        document.body.className = ""; 
-        
-        switch(themeName) {
-            case "dark":
-                rootStyle.setProperty("--bg", savedBg); 
-                rootStyle.setProperty("--text", "#e8eaf2");
-                rootStyle.setProperty("--glass", "#FFFFFF0F");
-                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
-                rootStyle.setProperty("--border", "#FFFFFF17");
-                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
-                break;
-            case "cosmic":
-                rootStyle.setProperty("--bg", "transparent");
-                rootStyle.setProperty("--text", "#e8eaf2");
-                rootStyle.setProperty("--glass", "#FFFFFF0F"); 
-                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
-                rootStyle.setProperty("--border", "#FFFFFF17");
-                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
-                document.body.classList.add("bg-cosmic");
-                break;
-            case "gradient":
-                rootStyle.setProperty("--bg", "transparent");
-                rootStyle.setProperty("--text", "#e8eaf2");
-                rootStyle.setProperty("--glass", "#FFFFFF0F");
-                rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
-                rootStyle.setProperty("--border", "#FFFFFF17");
-                rootStyle.setProperty("--border-hover", "#FFFFFF2E");
-                document.body.classList.add("bg-gradient");
-                break;
-            case "hacker":
-                rootStyle.setProperty("--bg", "#050505");
-                rootStyle.setProperty("--text", "#00ff00");
-                rootStyle.setProperty("--glass", "#00ff000A");
-                rootStyle.setProperty("--glass-hover", "#00ff001A");
-                rootStyle.setProperty("--border", "#00ff0033");
-                rootStyle.setProperty("--border-hover", "#00ff004D");
-                break;
-            case "ocean":
-                rootStyle.setProperty("--bg", "#041b2d");
-                rootStyle.setProperty("--text", "#e0f7fa");
-                rootStyle.setProperty("--glass", "#ffffff0A");
-                rootStyle.setProperty("--glass-hover", "#ffffff1A");
-                rootStyle.setProperty("--border", "#00e5ff33");
-                rootStyle.setProperty("--border-hover", "#00e5ff4D");
-                break;
-            case "sunset":
-                rootStyle.setProperty("--bg", "#2b1104");
-                rootStyle.setProperty("--text", "#ffe0b2");
-                rootStyle.setProperty("--glass", "#ffffff0A");
-                rootStyle.setProperty("--glass-hover", "#ffffff1A");
-                rootStyle.setProperty("--border", "#ff572233");
-                rootStyle.setProperty("--border-hover", "#ff57224D");
-                break;
-            case "vaporwave":
-                rootStyle.setProperty("--bg", "#2b003a");
-                rootStyle.setProperty("--text", "#f8bbd0");
-                rootStyle.setProperty("--glass", "#ffffff0A");
-                rootStyle.setProperty("--glass-hover", "#ffffff1A");
-                rootStyle.setProperty("--border", "#ff007f33");
-                rootStyle.setProperty("--border-hover", "#ff007f4D");
-                break;
-            case "midnight":
-                rootStyle.setProperty("--bg", "#0a1128");
-                rootStyle.setProperty("--text", "#fdf0d5");
-                rootStyle.setProperty("--glass", "#ffffff0A");
-                rootStyle.setProperty("--glass-hover", "#ffffff1A");
-                rootStyle.setProperty("--border", "#ffb70333");
-                rootStyle.setProperty("--border-hover", "#ffb7034D");
-                break;
-        }
+let savedAccent = localStorage.getItem("nexusAccent");
+if (savedAccent === null) {
+    savedAccent = "#7c6eff"; 
+}
+
+let savedBg = localStorage.getItem("nexusBg");
+if (savedBg === null) {
+    savedBg = "#0e1015";
+}
 
 
-        rootStyle.setProperty("--accent", savedAccent);
+function applyTheme(themeName) {
+
+    document.body.className = ""; 
+    
+
+    switch(themeName) {
+        case "dark":
+            rootStyle.setProperty("--bg", savedBg); 
+            rootStyle.setProperty("--text", "#e8eaf2");
+            rootStyle.setProperty("--glass", "#FFFFFF0F");
+            rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
+            rootStyle.setProperty("--border", "#FFFFFF17");
+            rootStyle.setProperty("--border-hover", "#FFFFFF2E");
+            break;
+        case "cosmic":
+            rootStyle.setProperty("--bg", "transparent");
+            rootStyle.setProperty("--text", "#e8eaf2");
+            rootStyle.setProperty("--glass", "#FFFFFF0F"); 
+            rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
+            rootStyle.setProperty("--border", "#FFFFFF17");
+            rootStyle.setProperty("--border-hover", "#FFFFFF2E");
+            document.body.classList.add("bg-cosmic");
+            break;
+        case "gradient":
+            rootStyle.setProperty("--bg", "transparent");
+            rootStyle.setProperty("--text", "#e8eaf2");
+            rootStyle.setProperty("--glass", "#FFFFFF0F");
+            rootStyle.setProperty("--glass-hover", "#FFFFFF1A");
+            rootStyle.setProperty("--border", "#FFFFFF17");
+            rootStyle.setProperty("--border-hover", "#FFFFFF2E");
+            document.body.classList.add("bg-gradient");
+            break;
+        case "hacker":
+            rootStyle.setProperty("--bg", "#050505");
+            rootStyle.setProperty("--text", "#00ff00");
+            rootStyle.setProperty("--glass", "#00ff000A");
+            rootStyle.setProperty("--glass-hover", "#00ff001A");
+            rootStyle.setProperty("--border", "#00ff0033");
+            rootStyle.setProperty("--border-hover", "#00ff004D");
+            break;
+        case "ocean":
+            rootStyle.setProperty("--bg", "#041b2d");
+            rootStyle.setProperty("--text", "#e0f7fa");
+            rootStyle.setProperty("--glass", "#ffffff0A");
+            rootStyle.setProperty("--glass-hover", "#ffffff1A");
+            rootStyle.setProperty("--border", "#00e5ff33");
+            rootStyle.setProperty("--border-hover", "#00e5ff4D");
+            break;
+        case "sunset":
+            rootStyle.setProperty("--bg", "#2b1104");
+            rootStyle.setProperty("--text", "#ffe0b2");
+            rootStyle.setProperty("--glass", "#ffffff0A");
+            rootStyle.setProperty("--glass-hover", "#ffffff1A");
+            rootStyle.setProperty("--border", "#ff572233");
+            rootStyle.setProperty("--border-hover", "#ff57224D");
+            break;
+        case "vaporwave":
+            rootStyle.setProperty("--bg", "#2b003a");
+            rootStyle.setProperty("--text", "#f8bbd0");
+            rootStyle.setProperty("--glass", "#ffffff0A");
+            rootStyle.setProperty("--glass-hover", "#ffffff1A");
+            rootStyle.setProperty("--border", "#ff007f33");
+            rootStyle.setProperty("--border-hover", "#ff007f4D");
+            break;
+        case "midnight":
+            rootStyle.setProperty("--bg", "#0a1128");
+            rootStyle.setProperty("--text", "#fdf0d5");
+            rootStyle.setProperty("--glass", "#ffffff0A");
+            rootStyle.setProperty("--glass-hover", "#ffffff1A");
+            rootStyle.setProperty("--border", "#ffb70333");
+            rootStyle.setProperty("--border-hover", "#ffb7034D");
+            break;
     }
 
-
-    editThemeBtn.addEventListener("click", function(event) {
-        event.stopPropagation();
-        themePopup.classList.toggle("show");
-        editThemeBtn.classList.toggle("active");
-    });
+  
+    rootStyle.setProperty("--accent", savedAccent);
+}
 
 
-    document.querySelector(".theme-dock").addEventListener("click", function(event) {
-        event.stopPropagation();
-    });
-
-
-    document.addEventListener("click", function() {
+editThemeBtn.addEventListener("click", function(event) {
+    event.stopPropagation(); 
+    
+ 
+    if (themePopup.classList.contains("show")) {
         themePopup.classList.remove("show");
         editThemeBtn.classList.remove("active");
-    });
-
-  
-    for (let i = 0; i < themeButtons.length; i++) {
-        let btn = themeButtons[i];
-        
-        btn.addEventListener("mouseover", function() {
-            applyTheme(btn.getAttribute("data-theme"));
-        });
-
-        btn.addEventListener("mouseout", function() {
-            applyTheme(savedTheme);
-        });
-
-        btn.addEventListener("click", function() {
-            savedTheme = btn.getAttribute("data-theme");
-            localStorage.setItem("nexusTheme", savedTheme);
-            applyTheme(savedTheme);
-        });
+    } else {
+        themePopup.classList.add("show");
+        editThemeBtn.classList.add("active");
     }
+});
+document.querySelector(".theme-dock").addEventListener("click", function(event) {
+    event.stopPropagation();
+});
 
+
+document.addEventListener("click", function() {
+    themePopup.classList.remove("show");
+    editThemeBtn.classList.remove("active");
+});
+
+
+for (let i = 0; i < themeButtons.length; i++) {
+    let btn = themeButtons[i];
+    
+   
+    btn.addEventListener("mouseover", function() {
+        let hoverTheme = btn.getAttribute("data-theme");
+        applyTheme(hoverTheme);
+    });
 
   
-    accentPicker.addEventListener("input", function() {
-        rootStyle.setProperty("--accent", accentPicker.value);
-    });
-    accentPicker.addEventListener("change", function() {
-        savedAccent = accentPicker.value;
-        localStorage.setItem("nexusAccent", savedAccent);
+    btn.addEventListener("mouseout", function() {
+        applyTheme(savedTheme);
     });
 
-    bgPicker.addEventListener("input", function() {
-        
-        savedTheme = "dark";
-        localStorage.setItem("nexusTheme", "dark");
-        document.body.className = ""; 
-        rootStyle.setProperty("--bg", bgPicker.value);
-    });
-    bgPicker.addEventListener("change", function() {
-        savedBg = bgPicker.value;
-        localStorage.setItem("nexusBg", savedBg);
-        applyTheme("dark"); 
-    });
 
-    // --- Initialize on Page Load ---
-    applyTheme(savedTheme);
-    accentPicker.value = savedAccent;
-    bgPicker.value = savedBg;
+    btn.addEventListener("click", function() {
+        savedTheme = btn.getAttribute("data-theme");
+        localStorage.setItem("nexusTheme", savedTheme);
+        applyTheme(savedTheme);
+    });
+}
+
+
+accentPicker.addEventListener("input", function() {
+   
+    rootStyle.setProperty("--accent", accentPicker.value);
+});
+
+accentPicker.addEventListener("change", function() {
+
+    savedAccent = accentPicker.value;
+    localStorage.setItem("nexusAccent", savedAccent);
+});
+
+bgPicker.addEventListener("input", function() {
+   
+    savedTheme = "dark";
+    localStorage.setItem("nexusTheme", "dark");
+    document.body.className = ""; 
+    rootStyle.setProperty("--bg", bgPicker.value);
+});
+
+bgPicker.addEventListener("change", function() {
+    savedBg = bgPicker.value;
+    localStorage.setItem("nexusBg", savedBg);
+    applyTheme("dark"); 
+});
+
+
+applyTheme(savedTheme);
+accentPicker.value = savedAccent;
+bgPicker.value = savedBg;
 
 
 // Weather
@@ -616,12 +584,12 @@ function getUserLocation() {
         descDisplay.innerText = "Locating..."; 
 
         navigator.geolocation.getCurrentPosition(
-            // Scenario A: User clicked "Allow"
+         
             function(position) {
                 let userLat = position.coords.latitude; 
                 let userLon = position.coords.longitude;
 
-                // NEW: Use a Reverse Geocoding API to get the city name
+   
                 let geoApiUrl = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + userLat + "&longitude=" + userLon + "&localityLanguage=en";
 
                 fetch(geoApiUrl)
@@ -629,27 +597,24 @@ function getUserLocation() {
                         return response.json();
                     })
                     .then(function(data) {
-                        // Extract the city name. If 'city' is empty, try 'locality'. 
-                        // If both fail, fall back to "Local".
+                   
                         let actualCityName = data.city || data.locality || "Local";
                         
-                        // Now that we have the real name, fetch the weather!
+                    
                         fetchWeather(userLat, userLon, actualCityName);
                     })
-                    .catch(function(error) {
-                        // If the name lookup fails for some reason, just use "Local" so the app doesn't crash
-                        console.log("City lookup failed: " + error);
+                    .catch(function(error) {          console.log("City lookup failed: " + error);
                         fetchWeather(userLat, userLon, "Local");
                     });
             },
-            // Scenario B: User clicked "Block"
+           
             function(error) {
                 console.log("Location access Denied or failed! Using Default Location");
                 fetchWeather(defaultLat, defaultLon, defaultCity);
             }
         );
     } else {
-        // Scenario C: Browser doesn't support geolocation
+ 
         fetchWeather(defaultLat, defaultLon, defaultCity);
     }
 }
@@ -719,99 +684,115 @@ targetCurr.addEventListener("change", calculateConversion);
 
 
 
-    let timeList = document.getElementById("time-list");
-    let resetTimeBtn = document.getElementById("reset-time");
+//Screen Time
 
-    function loadScreenTime() {
+
+let timeList = document.getElementById("time-list");
+let resetTimeBtn = document.getElementById("reset-time");
+
+if (resetTimeBtn) {
+    resetTimeBtn.addEventListener("click", function() {
+        let today = new Date().toDateString();
+        
         chrome.storage.local.get(["screenTime"], function(result) {
             let allData = result.screenTime || {};
-            let today = new Date().toDateString();
+            allData[today] = {};
             
-            // ONLY look at the data for today
-            let data = allData[today] || {}; 
-
-            timeList.innerHTML = ""; 
-
-            // If today's data is empty, show the starting message
-            if (Object.keys(data).length === 0) {
-                timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Start browsing today to track time!</div>';
-                return;
-            }
-
-            let sites = [];
-            for (let domain in data) {
-                // DATA SANITATION: Ignore glitches like "null", "undefined", or blank names
-                if (domain !== "null" && domain !== "undefined" && domain !== "") {
-                    sites.push({ domain: domain, time: data[domain] });
-                }
-            }
-            
-            // Sort highest to lowest
-            sites.sort(function(a, b) { return b.time - a.time; });
-
-            let maxTime = sites.length > 0 ? sites[0].time : 0;
-            let displayCount = Math.min(sites.length, 3);
-            let sitesShown = 0;
-
-            for (let i = 0; i < sites.length; i++) {
-                if (sitesShown >= displayCount) break;
-
-                let site = sites[i];
-                let totalSeconds = Math.floor(site.time / 1000); 
-                let totalMinutes = Math.floor(site.time / 60000);
-                
-                // Show site if you've been on it for more than 5 seconds
-                if (totalSeconds > 5) {
-                    sitesShown++;
-                    let percentage = (site.time / maxTime) * 100;
-                    
-                    let timeString = "";
-                    if (totalMinutes >= 60) {
-                        let hours = Math.floor(totalMinutes / 60);
-                        let mins = totalMinutes % 60;
-                        timeString = hours + "h " + mins + "m";
-                    } else if (totalMinutes > 0) {
-                        timeString = totalMinutes + "m";
-                    } else {
-                        timeString = "< 1m"; // Shows this if under a minute
-                    }
-
-                    let siteItem = document.createElement("div");
-                    siteItem.className = "site-item";
-                    siteItem.innerHTML = `
-                        <div class="site-info">
-                            <span class="site-name">${site.domain}</span>
-                            <span class="site-time">${timeString}</span>
-                        </div>
-                        <div class="site-bar-track">
-                            <div class="site-bar-fill" style="width: ${percentage}%"></div>
-                        </div>
-                    `;
-                    timeList.appendChild(siteItem);
-                }
-            }
-            
-            if (sitesShown === 0) {
-                 timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Browsing under 5 seconds...</div>';
-            }
-        });
-    }
-
-    
-    loadScreenTime();
-
-
-    if (resetTimeBtn) {
-        resetTimeBtn.addEventListener("click", function() {
-            let today = new Date().toDateString();
-            
-            chrome.storage.local.get(["screenTime"], function(result) {
-                let allData = result.screenTime || {};
-                allData[today] = {}; 
-                
-                chrome.storage.local.set({ screenTime: allData }, function() {
-                    loadScreenTime(); 
-                });
+            chrome.storage.local.set({ screenTime: allData }, function() {
+                loadScreenTime(); 
             });
         });
-    }
+    });
+}
+
+function loadScreenTime() {
+    chrome.storage.local.get(["screenTime"], function(result) {
+        let allData = result.screenTime || {};
+        let today = new Date().toDateString();
+        let data = allData[today] || {}; 
+
+        timeList.innerHTML = ""; 
+
+        let domainNames = Object.keys(data);
+        if (domainNames.length === 0) {
+            timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Start browsing today to track time!</div>';
+            return;
+        }
+
+        let sites = [];
+        for (let i = 0; i < domainNames.length; i++) {
+            let domain = domainNames[i];
+    
+            if (domain !== "null" && domain !== "undefined" && domain !== "") {
+                sites.push({ 
+                    domain: domain, 
+                    time: data[domain] 
+                });
+            }
+        }
+        
+        sites.sort(function(a, b) { return b.time - a.time; });
+
+        let maxTime = 0;
+        if (sites.length > 0) {
+            maxTime = sites[0].time;
+        }
+        
+        let displayCount = 3;
+        if (sites.length < 3) {
+            displayCount = sites.length;
+        }
+        
+        let sitesShown = 0;
+
+       
+        for (let i = 0; i < displayCount; i++) {
+            let site = sites[i];
+            
+            let totalSeconds = Math.floor(site.time / 1000); 
+            let totalMinutes = Math.floor(totalSeconds / 60);
+            let hours = Math.floor(totalMinutes / 60);
+            let remainingMins = totalMinutes % 60;
+           
+           
+            if (totalSeconds > 5) {
+                sitesShown++;
+                let percentage = (site.time / maxTime) * 100;
+                let timeString = "";
+                
+              
+                if (hours > 0) {
+                    timeString = hours + "h " + remainingMins + "m";
+                } else if (totalMinutes > 0) {
+                    timeString = totalMinutes + "m";
+                } else {
+                    timeString = "< 1m"; 
+                }
+
+            
+                let siteItem = document.createElement("div");
+                siteItem.className = "site-item";
+                
+                siteItem.innerHTML = `
+                    <div class="site-info">
+                        <span class="site-name">${site.domain}</span>
+                        <span class="site-time">${timeString}</span>
+                    </div>
+                    <div class="site-bar-track">
+                        <div class="site-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                
+                timeList.appendChild(siteItem);
+            }
+        }
+        
+    
+        if (sitesShown === 0) {
+             timeList.innerHTML = '<div class="theme-hint" style="margin-top: 10px;">Browsing under 5 seconds...</div>';
+        }
+    });
+}
+
+
+loadScreenTime();

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Nexus Hub",
   "version": "1.0",
-  "description": "A custom productivity dashboard and tab manager.",
+  "description": "A Smart Bdrowser Home Page",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

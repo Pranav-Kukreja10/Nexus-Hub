@@ -878,6 +878,16 @@ select.conv-dropdown option {
     pointer-events: none;
 }
 
+#note-content:empty::before {
+    content: attr(data-placeholder);
+    color: #888; 
+    pointer-events: none;
+}
+
+#note-content:focus{
+    outline: none;
+}
+
 /* Google Apps  */
 
 .app-container{
@@ -925,9 +935,6 @@ select.conv-dropdown option {
 
 /* Screen Time Monitoring */
 
-/* ==========================================
-   Screen Time Tracker Styles
-   ========================================== */
 .col-screentime {
     flex: 1;
 }
@@ -1135,9 +1142,7 @@ select.conv-dropdown option {
     color: var(--accent-2);
 }
 
-/* ==========================================
-   Theme Dock — Unified Edit Button + Popup
-   ========================================== */
+/* Theme */
 
 .theme-dock {
     position: fixed;

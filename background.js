@@ -1,29 +1,30 @@
-
 function getDomain(url) {
-    if (!url || !url.startsWith("http")) return null;
+    if (!url || !url.startsWith("http")) {
+        return null;
+    }
     let urlObj = new URL(url);
     return urlObj.hostname.replace("www.", ""); 
 }
 
-
 function saveTime(newDomain) {
-   
     chrome.storage.local.get(["trackingState", "screenTime"], function(result) {
         let state = result.trackingState || {};
         let allData = result.screenTime || {};
         let today = new Date().toDateString();
 
-      
-        if (state.domain && state.startTime) {
+        if (state.domain !== null && state.domain !== undefined && state.startTime) {
             let timeSpent = Date.now() - state.startTime;
             
-            if (!allData[today]) allData[today] = {};
-            if (!allData[today][state.domain]) allData[today][state.domain] = 0;
+            if (allData[today] === undefined) {
+                allData[today] = {};
+            }
+            if (allData[today][state.domain] === undefined) {
+                allData[today][state.domain] = 0;
+            }
             
             allData[today][state.domain] += timeSpent;
         }
 
-    
         state.domain = newDomain;
         state.startTime = Date.now();
 
@@ -34,12 +35,11 @@ function saveTime(newDomain) {
     });
 }
 
-
 chrome.tabs.onActivated.addListener(function(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, function(tab) {
-        URL
         if (tab.url) {
-            saveTime(getDomain(tab.url));
+            let domain = getDomain(tab.url);
+            saveTime(domain);
         }
     });
 });
@@ -47,15 +47,14 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.url) {
-
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             if (tabs.length > 0 && tabs[0].id === tabId) {
-                saveTime(getDomain(changeInfo.url));
+                let domain = getDomain(changeInfo.url);
+                saveTime(domain);
             }
         });
     }
 });
-
 
 chrome.windows.onFocusChanged.addListener(function(windowId) {
     if (windowId === chrome.windows.WINDOW_ID_NONE) {
@@ -63,8 +62,10 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
     } else {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             if (tabs.length > 0) {
-                saveTime(getDomain(tabs[0].url));
+                let domain = getDomain(tabs[0].url);
+                saveTime(domain);
             }
         });
     }
 });
+
