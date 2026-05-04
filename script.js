@@ -59,7 +59,7 @@ document.getElementById("search-input").addEventListener("keydown", function(e){
 // Focus Timer
 
 const display = document.getElementById("timer-time");
-const startBtn = document.getElementById("timer-start");
+const startBtn = document.getElementById("timer-toggle");
 const stopBtn = document.getElementById("timer-stop");
 const resetBtn = document.getElementById("timer-reset");
 const plusBtn = document.getElementById("timer-plus");
@@ -139,29 +139,34 @@ const input = document.getElementById("task-input");
 const container = document.getElementById("tasks-container");
 
 window.onload = () => {
-    container.innerHTML = localStorage.getItem("tasks") || "";
+    if (container) {
+        container.innerHTML = localStorage.getItem("tasks") || "";
+    }
 };
 
-btn.onclick = () => {
-    const text = input.value.trim();
-    if (!text) return;
+if (btn && input && container) {
+    btn.addEventListener("click", () => {
+        const text = input.value.trim();
+        if (!text) return;
 
-    const task = document.createElement("div");
-    task.className = "task-item";
+        const task = document.createElement("div");
+        task.className = "task-item";
 
-    task.innerHTML = `
-        <span class="material-symbols-rounded task-check">radio_button_unchecked</span>
-        <span class="task-text">${text}</span>
-        <span class="material-symbols-rounded task-del">delete</span>
-    `;
+        task.innerHTML = `
+            <span class="material-symbols-rounded task-check">radio_button_unchecked</span>
+            <span class="task-text">${text}</span>
+            <span class="material-symbols-rounded task-del">delete</span>
+        `;
 
-    container.appendChild(task);
-    input.value = "";
+        container.appendChild(task);
+        input.value = "";
 
-    saveTasks(); 
-};
+        saveTasks();
+    });
+}
 
-container.addEventListener("click", (e) => {
+if (container) {
+    container.addEventListener("click", (e) => {
 
     if (e.target.classList.contains("task-del")) {
         e.target.parentElement.remove();
@@ -182,6 +187,7 @@ container.addEventListener("click", (e) => {
         saveTasks();
     }
 });
+}
 
 function saveTasks() {
     localStorage.setItem("tasks", container.innerHTML);
@@ -193,7 +199,7 @@ function saveTasks() {
 const note = document.getElementById("note-content");
 
 const savedNotes = localStorage.getItem("nexus_notes");
-if (savededNotes) {
+if (savedNotes) {
     note.innerHTML = savedNotes; 
 }
 
@@ -562,15 +568,36 @@ targetCurr.addEventListener("change", calculateConversion);
 let timeList = document.getElementById("time-list");
 let resetTimeBtn = document.getElementById("reset-time");
 
+function getScreenTimeData(callback) {
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(["screenTime"], function(result) {
+            callback(result.screenTime || {});
+        });
+    } else {
+        try {
+            callback(JSON.parse(localStorage.getItem("screenTime") || "{}"));
+        } catch (e) {
+            callback({});
+        }
+    }
+}
+
+function setScreenTimeData(data, callback) {
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ screenTime: data }, callback);
+    } else {
+        localStorage.setItem("screenTime", JSON.stringify(data));
+        if (callback) callback();
+    }
+}
+
 if (resetTimeBtn) {
     resetTimeBtn.addEventListener("click", function() {
         let today = new Date().toDateString();
         
-        chrome.storage.local.get(["screenTime"], function(result) {
-            let allData = result.screenTime || {};
+        getScreenTimeData(function(allData) {
             allData[today] = {};
-            
-            chrome.storage.local.set({ screenTime: allData }, function() {
+            setScreenTimeData(allData, function() {
                 loadScreenTime(); 
             });
         });
@@ -578,10 +605,10 @@ if (resetTimeBtn) {
 }
 
 function loadScreenTime() {
-    chrome.storage.local.get(["screenTime"], function(result) {
-        let allData = result.screenTime || {};
+    getScreenTimeData(function(allData) {
         let today = new Date().toDateString();
         let data = allData[today] || {}; 
+
 
         timeList.innerHTML = ""; 
 
@@ -720,4 +747,4 @@ schedules.forEach(function (item) {
         }
     };
 
-});
+})
