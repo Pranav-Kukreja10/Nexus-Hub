@@ -56,44 +56,6 @@ document.getElementById("search-input").addEventListener("keydown", function(e){
     }
 });
 
-// // Voice Search
-// const voiceSearchBtn = document.getElementById("voice-search-btn");
-// if (voiceSearchBtn) {
-//     voiceSearchBtn.addEventListener("click", () => {
-//         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-//         if (SpeechRecognition) {
-//             const recognition = new SpeechRecognition();
-//             recognition.onstart = () => {
-//                 searchField.placeholder = "Listening...";
-//                 voiceSearchBtn.style.color = "var(--red)";
-//             };
-//             recognition.onresult = (event) => {
-//                 const transcript = event.results[0][0].transcript;
-//                 searchField.value = transcript;
-//                 searchButton.click();
-//             };
-//             recognition.onend = () => {
-//                 searchField.placeholder = "Search the web...";
-//                 voiceSearchBtn.style.color = "";
-//             };
-//             recognition.start();
-//         } else {
-//             alert("Voice search is not supported in this browser.");
-//         }
-//     });
-// }
-
-// // Image Search
-// const imageSearchBtn = document.getElementById("image-search-btn");
-// if (imageSearchBtn) {
-//     imageSearchBtn.addEventListener("click", () => {
-//         const imageUrl = prompt("Enter the URL of the image to search:");
-//         if (imageUrl && imageUrl.trim() !== "") {
-//             window.location.href = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl.trim())}`;
-//         }
-//     });
-// }
-
 // Focus Timer
 
 const display = document.getElementById("timer-time");
@@ -111,27 +73,6 @@ function updateDisplay() {
 
     seconds = seconds < 10 ? "0" + seconds : seconds;
     display.innerText = `${minutes}:${seconds}`;
-}
-
-function playBeep() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    
-    const context = new AudioContext();
-    const oscillator = context.createOscillator();
-    const gainNode = context.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.value = 800; 
-    
-    gainNode.gain.setValueAtTime(1, context.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.5);
-
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.5);
 }
 
 let isRunning = false;
@@ -156,7 +97,7 @@ toggleBtn.onclick = () => {
                 isRunning = false;
                 toggleBtn.innerText = "Start";
                 toggleBtn.classList.remove("btn-ghost");
-                playBeep();
+         
                 setTimeout(() => {
                     alert("Time's up!");
                 }, 50);
