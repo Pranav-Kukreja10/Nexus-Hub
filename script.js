@@ -191,29 +191,29 @@ if (container) {
 
 function saveTasks() {
     localStorage.setItem("tasks", container.innerHTML);
+    
 }
 
- 
-// Quick Notes
+//Quick Notes
 
 const note = document.getElementById("note-content");
 
 const savedNotes = localStorage.getItem("nexus_notes");
-if (savedNotes) {
-    note.innerHTML = savedNotes; 
+
+if (savedNotes){
+    note.innerHTML = savedNotes;
 }
 
-note.addEventListener("input", function () {
-    const content = note.innerHTML.trim();
+note.addEventListener("input", function() {
+    const content = note.textContent.trim(); 
 
     if (content) {
-        localStorage.setItem("nexus_notes", note.innerHTML);
-
-    } 
+        localStorage.setItem("nexus_notes", note.innerHTML); 
+    }
     else{
         localStorage.removeItem("nexus_notes");
     }
-}); 
+});
 
 //Theme
 
@@ -396,7 +396,6 @@ applyTheme(savedTheme);
 accentPicker.value = savedAccent;
 bgPicker.value = savedBg;
 
-
 // Weather
 
 let WeatherWidget = document.querySelector(".weather-widget");
@@ -503,13 +502,13 @@ WeatherWidget.addEventListener("click", function() {
     getUserLocation(); 
 });
 
-// Currency 
+//Currency
 
-let baseInput = document.getElementById("base-input"); 
-let targetVal = document.getElementById("target-val"); 
+let baseInput = document.getElementById("base-input");
+let targetVal = document.getElementById("target-val");
 let baseCurr = document.getElementById("base-curr");
-let targetCurr = document.getElementById("target-curr"); 
-let convFooter = document.getElementById("conv-date"); 
+let targetCurr = document.getElementById("target-curr");
+let convFooter = document.getElementById("conv-date");
 
 let exchangeRates = {}; 
 
@@ -522,43 +521,42 @@ function fetchRates() {
             return response.json(); 
         })
         .then(function(data){
-            exchangeRates = data.rates; 
+            exchangeRates = data.rates;
 
-            let updateDate = data.time_last_update_utc.slice(0, 16);
-            convFooter.innerText = "Rates from: " + updateDate;
+            let updateDate = data.last_time_update_utc.slice(0, 16);
+            convFooter.innerText = "Rates from: " + updateDate; 
 
-            calculateConversion();
-        }) 
+            calculateConversion(); 
+        })
         .catch(function(error){
             targetVal.innerText = "Err"; 
-            convFooter.innerText = " Failed to load rates.";
-            console.log("Currrency API Error: " + error);
+            convFooter.innerText = "Failed to Load Rates.";
+            console.log("Currency API Error: " + error);
         })
 }
 
 function calculateConversion() {
     let amount = parseFloat(baseInput.value); 
-    let target = targetCurr.value; 
+    let target = targetCurr.value;
 
     if (isNaN(amount)) {
         targetVal.innerText = "0.00";
-        return 
     }
 
-    let rate = exchangeRates[target]; 
-
+    let rate = exchangeRates[target];
     let result = amount * rate; 
-
-    targetVal.innerText = result.toFixed(2);
+    
+    targetVal.innerText = result.toFixed(2); 
 }
 
 fetchRates(); 
 
-baseInput.addEventListener("input", calculateConversion);
+baseInput.addEventListener("input", calculateConversion); 
 
 baseCurr.addEventListener("change", fetchRates); 
 
-targetCurr.addEventListener("change", calculateConversion); 
+targetCurr.addEventListener("change", calculateConversion);
+
 
 
 

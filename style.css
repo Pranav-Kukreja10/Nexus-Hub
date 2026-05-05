@@ -872,13 +872,17 @@ select.conv-dropdown option {
     color: var(--text-faint);
 }
 
-.note-area:empty::before {
+.note-area:empty::before,
+.note-area:has(> br:only-child)::before,
+.note-area:has(> div:only-child > br:only-child)::before {
     content: "Type here to start writing...";
     color: var(--text-faint);
     pointer-events: none;
 }
 
-#note-content:empty::before {
+#note-content:empty::before,
+#note-content:has(> br:only-child)::before,
+#note-content:has(> div:only-child > br:only-child)::before {
     content: attr(data-placeholder);
     color: #888; 
     pointer-events: none;
